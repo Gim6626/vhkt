@@ -1,0 +1,9 @@
+actions:
+  visual:
+    description: 'Visual/selection'
+    hotkeys:
+      - 'v'
+  delete:
+    description: 'Delete'
+    hotkeys:
+      - 'd'
