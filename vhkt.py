@@ -1,17 +1,19 @@
 import logging
 import sys
+import argparse
 
 import vhkt.core
 
 from pprint import pprint
 
 logger: logging.Logger = None
+args = None
 
 
 def main():
-    hk_storage_file_path = 'hkdb.yaml'
+    hk_storage_file_path = args.HOT_KEYS_STORAGE_FILE
     hk_storage = vhkt.core.FileHotKeysStorage(hk_storage_file_path)
-    learning_results_file_path = 'lrnres.yaml'
+    learning_results_file_path = args.LEARNING_RESULTS_FILE
     learning_results = vhkt.core.FileLearningResultsStorage(learning_results_file_path, hk_storage)
     all_success = learning_results.all_actions_learned_successfully()
     if all_success:
@@ -52,4 +54,10 @@ def init_custom_logger(logging_level):
 
 if __name__ == '__main__':
     logger = init_custom_logger(logging.DEBUG)
+    parser = argparse.ArgumentParser(description='Learn Vim hotkeys')
+    parser.add_argument('HOT_KEYS_STORAGE_FILE',
+                        help='Path to hot keys info storage file')
+    parser.add_argument('LEARNING_RESULTS_FILE',
+                        help='Path to learning results storage file')
+    args = parser.parse_args()
     sys.exit(main())
