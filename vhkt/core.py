@@ -1,7 +1,9 @@
 import yaml
+import os.path
+import random
 
 
-class HotKeysDataBase:
+class HotKeysStorage:
 
     hkdb_file_path: str = None
 
@@ -12,5 +14,71 @@ class HotKeysDataBase:
             self._data = yaml.safe_load(raw_data)
 
     @property
-    def actions(self):
-        return self._data['actions']
+    def actions_keys(self):
+        return list(self._data['actions'].keys())
+
+    def action_description_by_key(self, key):
+        return self._data['actions'][key]['description']
+
+    def action_hotkeys_by_key(self, key):
+        return self._data['actions'][key]['hotkeys']
+
+
+class LearningResultsStorage:
+
+    lrnres_file_path: str = None
+
+    def __init__(self, lrnres_file_path: str, hk_storage: HotKeysStorage):
+        self.lrnres_file_path = lrnres_file_path
+        if os.path.isfile(self.lrnres_file_path):
+            with open(lrnres_file_path, 'r') as fin:
+                raw_data = fin.read()
+                self._data = yaml.safe_load(raw_data)
+        else:
+            self._data = {'actions': {}}
+        for key in hk_storage.actions_keys:
+            if key not in self.actions_keys:
+                self._data['actions'][key] = {}
+
+    @property
+    def actions_keys(self):
+        return list(self._data['actions'].keys())
+
+    def action_success(self, action_key) -> bool:
+        if 'success' in self._data['actions'][action_key] \
+                and self._data['actions'][action_key]['success']:
+            return True
+        else:
+            return False
+
+    def set_action_learned_success(self, action_key):
+        if action_key not in self._data['actions']:
+            self._data['actions'][action_key] = {}
+        self._data['actions'][action_key]['success'] = True
+
+    def all_actions_learned_successfully(self) -> bool:
+        all_success = True
+        if self._data['actions'] == {}:
+            all_success = False
+        else:
+            for action_key, action_value in self._data['actions'].items():
+                if 'success' in self._data['actions'][action_key] \
+                        and not self._data['actions'][action_key]['success'] \
+                        or action_key not in self._data['actions'] \
+                        or 'success' not in self._data['actions'][action_key]:
+                    all_success = False
+        return all_success
+
+    @property
+    def random_nonlearned_action_key(self):
+        random_action_key_index = random.randint(0, len(self.actions_keys) - 1)
+        random_action_key = self.actions_keys[random_action_key_index]
+        if random_action_key in self.actions_keys \
+                and self.action_success(random_action_key):
+            return None
+        return random_action_key
+
+    def save(self):
+        with open(self.lrnres_file_path, 'w') as learning_results_file:
+            learning_results_file_data = yaml.safe_dump(self._data)
+            learning_results_file.write(learning_results_file_data)

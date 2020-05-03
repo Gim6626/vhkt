@@ -1,9 +1,5 @@
 import logging
 import sys
-import yaml
-import os.path
-from typing import Dict
-import random
 
 import vhkt.core
 
@@ -13,55 +9,27 @@ logger: logging.Logger = None
 
 
 def main():
-    db = vhkt.core.HotKeysDataBase('hkdb.yaml')
+    hk_storage_file_path = 'hkdb.yaml'
+    hk_storage = vhkt.core.HotKeysStorage(hk_storage_file_path)
     learning_results_file_path = 'lrnres.yaml'
-    learning_results: Dict = {}
-    if os.path.isfile(learning_results_file_path):
-        with open(learning_results_file_path, 'r') as learning_results_file:
-            learning_results_data = learning_results_file.read()
-            learning_results = yaml.safe_load(learning_results_data)
-    else:
-        learning_results = {'actions': {}}
-    all_success = all_actions_learned_successfully(learning_results)
+    learning_results = vhkt.core.LearningResultsStorage(learning_results_file_path, hk_storage)
+    all_success = learning_results.all_actions_learned_successfully()
     if all_success:
         print('All hotkeys are learned, nothing to do')
         return 0
     while True:
-        db_actions_keys = list(db.actions.keys())
-        random_action_key_index = random.randint(0, len(db_actions_keys) - 1)
-        random_action_key = db_actions_keys[random_action_key_index]
-        if random_action_key in learning_results['actions'] \
-                and 'success' in learning_results['actions'][random_action_key] \
-                and learning_results['actions'][random_action_key]['success']:
+        random_action_key = learning_results.random_nonlearned_action_key
+        if random_action_key is None:
             continue
-        if random_action_key not in learning_results['actions']:
-            learning_results['actions'][random_action_key] = {}
-        current_action = db.actions[random_action_key]
-        question = f'What is hotkey for "{current_action["description"]}"? '
+        question = f'What is hotkey for "{hk_storage.action_description_by_key(random_action_key)}"? '
         hotkey = input(question)
-        if hotkey in current_action['hotkeys']:
-            learning_results['actions'][random_action_key]['success'] = True
-        with open(learning_results_file_path, 'w') as learning_results_file:
-            learning_results_file_data = yaml.safe_dump(learning_results)
-            learning_results_file.write(learning_results_file_data)
-        all_success = all_actions_learned_successfully(learning_results)
+        if hotkey in hk_storage.action_hotkeys_by_key(random_action_key):
+            learning_results.set_action_learned_success(random_action_key)
+        learning_results.save()
+        all_success = learning_results.all_actions_learned_successfully()
         if all_success:
             print('All hotkeys are learned, nothing to do')
             return 0
-
-
-def all_actions_learned_successfully(learning_results):
-    all_success = True
-    if learning_results['actions'] == {}:
-        all_success = False
-    else:
-        for action_key, action_value in learning_results['actions'].items():
-            if 'success' in learning_results['actions'][action_key] \
-                    and not learning_results['actions'][action_key]['success'] \
-                    or action_key not in learning_results['actions'] \
-                    or 'success' not in learning_results['actions'][action_key]:
-                all_success = False
-    return all_success
 
 
 def init_custom_logger(logging_level):
