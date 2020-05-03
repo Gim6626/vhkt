@@ -10,9 +10,9 @@ logger: logging.Logger = None
 
 def main():
     hk_storage_file_path = 'hkdb.yaml'
-    hk_storage = vhkt.core.HotKeysStorage(hk_storage_file_path)
+    hk_storage = vhkt.core.FileHotKeysStorage(hk_storage_file_path)
     learning_results_file_path = 'lrnres.yaml'
-    learning_results = vhkt.core.LearningResultsStorage(learning_results_file_path, hk_storage)
+    learning_results = vhkt.core.FileLearningResultsStorage(learning_results_file_path, hk_storage)
     all_success = learning_results.all_actions_learned_successfully()
     if all_success:
         print('All hotkeys are learned, nothing to do')

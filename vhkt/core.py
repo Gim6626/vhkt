@@ -1,9 +1,26 @@
 import yaml
 import os.path
 import random
+from abc import ABC, abstractmethod, abstractproperty
 
 
-class HotKeysStorage:
+class HotKeysStorage(ABC):
+
+    @property
+    @abstractmethod
+    def actions_keys(self):
+        pass
+
+    @abstractmethod
+    def action_description_by_key(self, key):
+        pass
+
+    @abstractmethod
+    def action_hotkeys_by_key(self, key):
+        pass
+
+
+class FileHotKeysStorage(HotKeysStorage):
 
     hkdb_file_path: str = None
 
@@ -24,7 +41,35 @@ class HotKeysStorage:
         return self._data['actions'][key]['hotkeys']
 
 
-class LearningResultsStorage:
+class LearningResultsStorage(ABC):
+
+    @property
+    @abstractmethod
+    def actions_keys(self):
+        pass
+
+    @abstractmethod
+    def action_success(self, action_key) -> bool:
+        pass
+
+    @abstractmethod
+    def set_action_learned_success(self, action_key):
+        pass
+
+    @abstractmethod
+    def all_actions_learned_successfully(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def random_nonlearned_action_key(self):
+        pass
+
+    def save(self):
+        pass
+
+
+class FileLearningResultsStorage:
 
     lrnres_file_path: str = None
 
