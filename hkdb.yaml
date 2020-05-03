@@ -3,7 +3,175 @@ actions:
     description: 'Visual/selection'
     hotkeys:
       - 'v'
+  horizontal_visual:
+    description: 'Horizontal visual/selection'
+    hotkeys:
+      - 'Ctrl+v'
   delete:
     description: 'Delete'
     hotkeys:
       - 'd'
+  insert:
+    description: 'Insert (enter edit mode)'
+    hotkeys:
+      - 'i'
+  paste_after:
+    description: 'Paste after'
+    hotkeys:
+      - 'p'
+  paste_before:
+    description: 'Paste before'
+    hotkeys:
+      - 'P'
+  yank:
+    description: 'Yank (copy)'
+    hotkeys:
+      - 'y'
+  cut:
+    description: 'Cut'
+    hotkeys:
+      - 'x'
+  undo:
+    description: 'Undo'
+    hotkeys:
+      - 'u'
+  redo:
+    description: 'Redo'
+    hotkeys:
+      - 'Ctrl+r'
+  search:
+    description: 'Search'
+    hotkeys:
+      - '/'
+  parenthesis_jumping:
+    description: 'Parenthesis jumping'
+    hotkeys:
+      - '%'
+  substitute:
+    description: 'Substitute using regexp'
+    hotkeys:
+      - ':s'
+  enable_line_numbers:
+    description: 'Enable line numbers'
+    hotkeys:
+      - ': set number'
+  disable_line_numbers:
+    description: 'Disable line numbers'
+    hotkeys:
+      - ': set nonumber'
+  file_explorer:
+    description: 'File explorer'
+    hotkeys:
+      - ': Explore'
+  terminal:
+    description: 'Open terminal'
+    hotkeys:
+      - ': terminal'
+  quit:
+    description: 'Quit, close tab, close split'
+    hotkeys:
+      - ':q'
+  quit_without_saving:
+    description: 'Quit without saving'
+    hotkeys:
+      - ':q!'
+  write:
+    description: 'Write'
+    hotkeys:
+      - ':w'
+  go_to_beginning_of_next_word:
+    description: 'Go to beginning of next word'
+    hotkeys:
+      - 'w'
+  go_to_end_of_current_word:
+    description: 'Go to end of current word'
+    hotkeys:
+      - 'e'
+  go_to_beginning_of_current_word:
+    description: 'Go to beginning of current word'
+    hotkeys:
+      - 'b'
+  go_left:
+    description: 'Go left'
+    hotkeys:
+      - 'h'
+  go_down:
+    description: 'Go down'
+    hotkeys:
+      - 'j'
+  go_up:
+    description: 'Go up'
+    hotkeys:
+      - 'k'
+  go_right:
+    description: 'Go right'
+    hotkeys:
+      - 'l'
+  go_to_end_of_line:
+    description: 'Go to end of line'
+    hotkeys:
+      - '$'
+  go_to_beginning_of_line:
+    description: 'Go to beginning of line'
+    hotkeys:
+      - '0'
+      - '^'
+  go_to_beginning_of_file:
+    description: 'Go to beginning of file'
+    hotkeys:
+      - 'gg'
+  go_to_end_of_file:
+    description: 'Go to end of file'
+    hotkeys:
+      - 'G'
+  go_to_line:
+    description: 'Go to line N'
+    hotkeys:
+      - ':N'
+      - 'NG'
+  go_forward_sentence:
+    description: 'Go forward sentence'
+    hotkeys:
+      - ')'
+  go_backward_sentence:
+    description: 'Go backward sentence'
+    hotkeys:
+      - '('
+  go_forward_paragraph:
+    description: 'Go forward paragraph'
+    hotkeys:
+      - '}'
+  go_backward_paragraph:
+    description: 'Go backward paragraph'
+    hotkeys:
+      - '{'
+  split_horizontally:
+    description: 'Split horizontally'
+    hotkeys:
+      - ':sp'
+  split_vertically:
+    description: 'Split vertically'
+    hotkeys:
+      - ':vsp'
+  close_all_other_splits:
+    description: 'Close all other splits'
+    hotkeys:
+      - ':only'
+  cycle_between_splits:
+    description: 'Cycle between splits'
+    hotkeys:
+      - 'Ctrl+w,Ctrl+w'
+  new_tab:
+    description: 'New tab'
+    hotkeys:
+      - ':tabnew'
+  next_tab:
+    description: 'Next tab'
+    hotkeys:
+      - ':tabn'
+      - 'gt'
+  previous_tab:
+    description: 'Previous tab'
+    hotkeys:
+      - ':tabp'
+      - 'gT'
