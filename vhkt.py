@@ -25,6 +25,9 @@ def main():
         hotkey = input(question)
         if hotkey in hk_storage.action_hotkeys_by_key(random_action_key):
             learning_results.set_action_learned_success(random_action_key)
+            print('Correct!')
+        else:
+            print('Wrong!')
         learning_results.save()
         all_success = learning_results.all_actions_learned_successfully()
         if all_success:
