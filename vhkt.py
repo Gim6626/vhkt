@@ -8,13 +8,18 @@ from pprint import pprint
 
 logger: logging.Logger = None
 args = None
+DEFAULT_LEARNING_RESULTS_FILE = 'lrnres.yaml'
 
 
 def main():
     hk_storage_file_path = args.HOT_KEYS_STORAGE_FILE
     hk_storage = vhkt.core.FileHotKeysStorage(hk_storage_file_path)
     logger.debug('Hot keys storage loaded')
-    learning_results_file_path = args.LEARNING_RESULTS_FILE
+    if args.LEARNING_RESULTS_FILE:
+        learning_results_file_path = args.LEARNING_RESULTS_FILE
+    else:
+        print(f'Learning results file path not passed, using default "{DEFAULT_LEARNING_RESULTS_FILE}"')
+        learning_results_file_path = DEFAULT_LEARNING_RESULTS_FILE
     learning_results = vhkt.core.FileLearningResultsStorage(learning_results_file_path, hk_storage)
     logger.debug('Learning results storage created/loaded')
     all_success = learning_results.all_actions_learned_successfully()
@@ -67,7 +72,8 @@ if __name__ == '__main__':
     parser.add_argument('HOT_KEYS_STORAGE_FILE',
                         help='Path to hot keys info storage file')
     parser.add_argument('LEARNING_RESULTS_FILE',
-                        help='Path to learning results storage file')
+                        help='Path to learning results storage file',
+                        nargs='?')
     parser.add_argument('-d',
                         '--debug',
                         action='store_true',
