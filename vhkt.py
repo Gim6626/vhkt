@@ -38,9 +38,10 @@ def main():
         elif answer == '\\q':
             return 0
         elif answer in hk_storage.action_hotkeys_by_key(random_action_key):
-            learning_results.set_action_learned_success(random_action_key)
+            learning_results.set_action_guess_correct(random_action_key)
             print('Correct!')
         else:
+            learning_results.set_action_guess_wrong(random_action_key)
             print('Wrong!')
         learning_results.save()
         logger.debug('Learning results saved')

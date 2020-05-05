@@ -43,6 +43,8 @@ class FileHotKeysStorage(HotKeysStorage):
 
 class LearningResultsStorage(ABC):
 
+    CORRECT_ANSWERS_TO_LEARN = 3
+
     @property
     @abstractmethod
     def actions_keys(self):
@@ -53,12 +55,22 @@ class LearningResultsStorage(ABC):
         pass
 
     @abstractmethod
-    def set_action_learned_success(self, action_key):
+    def set_action_learned_successfully(self, action_key):
         pass
 
     @abstractmethod
     def all_actions_learned_successfully(self) -> bool:
         pass
+
+    @abstractmethod
+    def set_action_guess_correctness(self, action_key, correctness):
+        pass
+
+    def set_action_guess_correct(self, action_key):
+        self.set_action_guess_correctness(action_key, True)
+
+    def set_action_guess_wrong(self, action_key):
+        self.set_action_guess_correctness(action_key, False)
 
     @property
     @abstractmethod
@@ -69,7 +81,7 @@ class LearningResultsStorage(ABC):
         pass
 
 
-class FileLearningResultsStorage:
+class FileLearningResultsStorage(LearningResultsStorage):
 
     lrnres_file_path: str = None
 
@@ -80,6 +92,8 @@ class FileLearningResultsStorage:
                 raw_data = fin.read()
                 self._data = yaml.safe_load(raw_data)
         else:
+            self._data = None
+        if not self._data:
             self._data = {'actions': {}}
         for key in hk_storage.actions_keys:
             if key not in self.actions_keys:
@@ -96,10 +110,33 @@ class FileLearningResultsStorage:
         else:
             return False
 
-    def set_action_learned_success(self, action_key):
+    def set_action_learned_successfully(self, action_key):
         if action_key not in self._data['actions']:
             self._data['actions'][action_key] = {}
         self._data['actions'][action_key]['success'] = True
+
+    def set_action_guess_correctness(self, action_key, correctness):
+        if action_key not in self._data['actions']:
+            self._data['actions'][action_key] = {}
+        guesses_key = 'guesses'
+        if guesses_key not in self._data['actions'][action_key]:
+            self._data['actions'][action_key][guesses_key] = 1
+        else:
+            self._data['actions'][action_key][guesses_key] += 1
+        correct_guesses_key = 'correct_guesses'
+        if correct_guesses_key not in self._data['actions'][action_key]:
+            if correctness:
+                self._data['actions'][action_key][correct_guesses_key] = 1
+            else:
+                self._data['actions'][action_key][correct_guesses_key] = 0
+        else:
+            if correctness:
+                self._data['actions'][action_key][correct_guesses_key] += 1
+                if self._data['actions'][action_key][correct_guesses_key] == self.CORRECT_ANSWERS_TO_LEARN:
+                    self.set_action_learned_successfully(action_key)
+            else:
+                if self._data['actions'][action_key][correct_guesses_key] > 0:
+                    self._data['actions'][action_key][correct_guesses_key] -= 1
 
     def all_actions_learned_successfully(self) -> bool:
         all_success = True
