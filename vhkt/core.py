@@ -54,6 +54,22 @@ class LearningResultsStorage(ABC):
     def action_success(self, action_key) -> bool:
         pass
 
+    @property
+    def actions_count(self) -> int:
+        return len(self.actions_keys)
+
+    @property
+    def actions_learned_count(self) -> int:
+        count = 0
+        for key in self.actions_keys:
+            if self.action_success(key):
+                count += 1
+        return count
+
+    @property
+    def actions_to_learn_count(self) -> int:
+        return self.actions_count - self.actions_learned_count
+
     @abstractmethod
     def set_action_learned_successfully(self, action_key):
         pass

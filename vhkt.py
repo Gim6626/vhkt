@@ -20,6 +20,7 @@ def main():
         learning_results_file_path = DEFAULT_LEARNING_RESULTS_FILE
     learning_results = vhkt.core.FileLearningResultsStorage(learning_results_file_path, hk_storage)
     logger.debug('Learning results storage created/loaded')
+    print_learning_stats(learning_results)
     all_success = learning_results.all_actions_learned_successfully()
     if all_success:
         print('All hotkeys are learned, nothing to do')
@@ -43,12 +44,17 @@ def main():
         else:
             learning_results.set_action_guess_wrong(random_action_key)
             print('Wrong!')
+        print_learning_stats(learning_results)
         learning_results.save()
         logger.debug('Learning results saved')
         all_success = learning_results.all_actions_learned_successfully()
         if all_success:
             print('All hotkeys are learned, nothing to do')
             return 0
+
+
+def print_learning_stats(learning_results):
+    print(f'{learning_results.actions_learned_count} actions learned, {learning_results.actions_to_learn_count} left')
 
 
 def init_custom_logger(logging_level):
