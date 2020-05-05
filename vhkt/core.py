@@ -89,6 +89,7 @@ class BasicLearningResultsStorage(ABC):
     def set_action_learned_successfully(self, action_key):
         pass
 
+    @property
     @abstractmethod
     def all_actions_learned_successfully(self) -> bool:
         pass
@@ -169,6 +170,7 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
                 if self._data['actions'][action_key][correct_guesses_key] > 0:
                     self._data['actions'][action_key][correct_guesses_key] -= 1
 
+    @property
     def all_actions_learned_successfully(self) -> bool:
         all_success = True
         if self._data['actions'] == {}:
