@@ -32,6 +32,9 @@ You should see something like this:
     What is hotkey for "Go left"?
     Type keys combination or "\h" for help or "\q" to quit:
 
+To learn hotkey or command you should correctly type it three times.
+Mistake? Minus one, try more.
+
 Now you could start learning, good luck!
 
 ## Advanced Usage
