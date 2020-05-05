@@ -23,7 +23,7 @@ directory:
 In this case VHKT will load `hkdb.yaml` from repository directory,
 create template for learning results file with default name
 `lrnres.yaml`, fill it with actions keys from `hkdb.yaml` and start
-learning.
+it's work.
 
 You should see something like this:
 
