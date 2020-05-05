@@ -1,3 +1,6 @@
+# Copyleft GPLv3 or later
+# 2020 Dmitriy Vinokurov gim6626@gmail.com
+
 import logging
 import sys
 import argparse
