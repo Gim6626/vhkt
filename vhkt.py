@@ -25,9 +25,16 @@ def main():
         random_action_key = learning_results.random_nonlearned_action_key
         if random_action_key is None:
             continue
-        question = f'What is hotkey for "{hk_storage.action_description_by_key(random_action_key)}"? '
-        hotkey = input(question)
-        if hotkey in hk_storage.action_hotkeys_by_key(random_action_key):
+        question \
+            = f'What is hotkey for "{hk_storage.action_description_by_key(random_action_key)}"?' \
+              + f'\nType keys combination or "\\h" for help or "\\q" to quit: '
+        answer = input(question)
+        if answer == '\\h':
+            hotkeys_str = '"' + '", "'.join(hk_storage.action_hotkeys_by_key(random_action_key)) + '"'
+            print(f'Hotkey(s) for "{hk_storage.action_description_by_key(random_action_key)}": {hotkeys_str}')
+        elif answer == '\\q':
+            return 0
+        elif answer in hk_storage.action_hotkeys_by_key(random_action_key):
             learning_results.set_action_learned_success(random_action_key)
             print('Correct!')
         else:
