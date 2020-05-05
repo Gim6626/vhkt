@@ -54,19 +54,19 @@ actions:
   enable_line_numbers:
     description: 'Enable line numbers'
     hotkeys:
-      - ': set number'
+      - ':set number'
   disable_line_numbers:
     description: 'Disable line numbers'
     hotkeys:
-      - ': set nonumber'
+      - ':set nonumber'
   file_explorer:
     description: 'File explorer'
     hotkeys:
-      - ': Explore'
+      - ':Explore'
   terminal:
     description: 'Open terminal'
     hotkeys:
-      - ': terminal'
+      - ':terminal'
   quit:
     description: 'Quit, close tab, close split'
     hotkeys:
