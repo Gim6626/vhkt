@@ -1,10 +1,22 @@
 # Copyleft GPLv3 or later
 # 2020 Dmitriy Vinokurov gim6626@gmail.com
 
-import yaml
-import os.path
-import random
-from abc import ABC, abstractmethod, abstractproperty
+try:
+    import yaml
+    import os.path
+    import random
+    from abc import ABC, abstractmethod, abstractproperty
+except ModuleNotFoundError as e:
+    import sys
+    import os.path
+    from inspect import getsourcefile
+    current_dir = os.path.dirname(os.path.abspath(getsourcefile(lambda: 0)))
+    parent_dir = os.path.realpath(os.path.join(current_dir, '..'))
+    frmt_str = 'Try to install requirements using command '\
+               + '\'pip3 install -r requirements.txt\' from "{}" '\
+               + 'directory or from virtual env (better)'
+    print('ERROR: ' + str(e) + '. ' + frmt_str.format(parent_dir))
+    sys.exit(1)
 
 
 class BasicHotKeysStorage(ABC):
