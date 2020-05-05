@@ -7,7 +7,7 @@ import random
 from abc import ABC, abstractmethod, abstractproperty
 
 
-class HotKeysStorage(ABC):
+class BasicHotKeysStorage(ABC):
 
     @property
     @abstractmethod
@@ -23,7 +23,7 @@ class HotKeysStorage(ABC):
         pass
 
 
-class FileHotKeysStorage(HotKeysStorage):
+class FileHotKeysStorage(BasicHotKeysStorage):
 
     hkdb_file_path: str = None
 
@@ -44,7 +44,7 @@ class FileHotKeysStorage(HotKeysStorage):
         return self._data['actions'][key]['hotkeys']
 
 
-class LearningResultsStorage(ABC):
+class BasicLearningResultsStorage(ABC):
 
     CORRECT_ANSWERS_TO_LEARN = 3
 
@@ -100,11 +100,11 @@ class LearningResultsStorage(ABC):
         pass
 
 
-class FileLearningResultsStorage(LearningResultsStorage):
+class FileLearningResultsStorage(BasicLearningResultsStorage):
 
     lrnres_file_path: str = None
 
-    def __init__(self, lrnres_file_path: str, hk_storage: HotKeysStorage):
+    def __init__(self, lrnres_file_path: str, hk_storage: BasicHotKeysStorage):
         self.lrnres_file_path = lrnres_file_path
         if os.path.isfile(self.lrnres_file_path):
             with open(lrnres_file_path, 'r') as fin:

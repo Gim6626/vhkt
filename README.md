@@ -43,7 +43,7 @@ argument.
 just pass desired path to VHKT as second (optional) command line
 argument and enjoy.
 1. VHKT was create with intention to extend it, so if you look
-at `vhkt/core.py` you will see both basic and `File...` classes.
+at `vhkt/core.py` you will see both `Basic...` and `File...` classes.
 If needed source code could be extended to work with database for
 example or to support several users.
 
