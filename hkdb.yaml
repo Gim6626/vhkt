@@ -4,7 +4,7 @@ actions:
     hotkeys:
       - 'v'
   horizontal_visual:
-    description: 'Horizontal visual/selection'
+    description: 'Vertical visual/selection'
     hotkeys:
       - 'Ctrl+v'
   delete:
