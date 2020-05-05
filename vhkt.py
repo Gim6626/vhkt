@@ -4,8 +4,6 @@ import argparse
 
 import vhkt.core
 
-from pprint import pprint
-
 logger: logging.Logger = None
 args = None
 DEFAULT_LEARNING_RESULTS_FILE = 'lrnres.yaml'
