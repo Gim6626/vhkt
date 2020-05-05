@@ -13,8 +13,10 @@ args = None
 def main():
     hk_storage_file_path = args.HOT_KEYS_STORAGE_FILE
     hk_storage = vhkt.core.FileHotKeysStorage(hk_storage_file_path)
+    logger.debug('Hot keys storage loaded')
     learning_results_file_path = args.LEARNING_RESULTS_FILE
     learning_results = vhkt.core.FileLearningResultsStorage(learning_results_file_path, hk_storage)
+    logger.debug('Learning results storage created/loaded')
     all_success = learning_results.all_actions_learned_successfully()
     if all_success:
         print('All hotkeys are learned, nothing to do')
@@ -31,6 +33,7 @@ def main():
         else:
             print('Wrong!')
         learning_results.save()
+        logger.debug('Learning results saved')
         all_success = learning_results.all_actions_learned_successfully()
         if all_success:
             print('All hotkeys are learned, nothing to do')
@@ -53,11 +56,16 @@ def init_custom_logger(logging_level):
 
 
 if __name__ == '__main__':
-    logger = init_custom_logger(logging.DEBUG)
     parser = argparse.ArgumentParser(description='Learn Vim hotkeys')
     parser.add_argument('HOT_KEYS_STORAGE_FILE',
                         help='Path to hot keys info storage file')
     parser.add_argument('LEARNING_RESULTS_FILE',
                         help='Path to learning results storage file')
+    parser.add_argument('-d',
+                        '--debug',
+                        action='store_true',
+                        help='Debug mode')
     args = parser.parse_args()
+    logging_level = logging.DEBUG if args.debug else logging.INFO
+    logger = init_custom_logger(logging_level)
     sys.exit(main())
