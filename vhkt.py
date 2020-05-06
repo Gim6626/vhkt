@@ -37,8 +37,7 @@ def main():
               + f'\nType keys combination or "\\h" for help or "\\q" to quit: '
         answer = input(question)
         if answer == '\\h':
-            hotkeys_str = '"' + '", "'.join(hk_storage.action_hotkeys_by_key(random_action_key)) + '"'
-            print(f'Hotkey(s) for "{hk_storage.action_description_by_key(random_action_key)}": {hotkeys_str}')
+            print_help_for_action(hk_storage, random_action_key)
         elif answer == '\\q':
             return 0
         elif answer in hk_storage.action_hotkeys_by_key(random_action_key):
@@ -47,6 +46,17 @@ def main():
         else:
             learning_results.set_action_guess_wrong(random_action_key)
             print('Wrong!')
+            while True:
+                question2 = 'Want to see correct answer? [y/n]: '
+                answer2 = input(question2)
+                if answer2 == 'y':
+                    print_help_for_action(hk_storage, random_action_key)
+                    break
+                elif answer2 == 'n':
+                    break
+                else:
+                    print('You should type "y" or "n"')
+                    continue
         print_learning_stats(learning_results)
         learning_results.save()
         logger.debug('Learning results saved')
@@ -54,6 +64,11 @@ def main():
         if all_success:
             print('All hotkeys are learned, nothing more to do')
             return 0
+
+
+def print_help_for_action(hk_storage, action_key):
+    hotkeys_str = '"' + '", "'.join(hk_storage.action_hotkeys_by_key(action_key)) + '"'
+    print(f'Hotkey(s) for "{hk_storage.action_description_by_key(action_key)}": {hotkeys_str}')
 
 
 def print_learning_stats(learning_results):
