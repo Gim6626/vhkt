@@ -33,8 +33,10 @@ def main():
         if random_action_key is None:
             continue
         question \
-            = f'What is hotkey for "{hk_storage.action_description_by_key(random_action_key)}"?' \
-              + f'\nType keys combination or "\\h" for help or "\\q" to quit: '
+            = f'What is hotkey for "{hk_storage.action_description_by_key(random_action_key)}"?'.upper() \
+              + f'\nType* keys combination or "\\h" for help or "\\q" to quit' \
+              + '\n* If you need to use Ctrl or other special key in answer, type it\'s name plus regular key like "Ctrl+w"' \
+              + '\n> '
         answer = input(question)
         if answer == '\\h':
             print_help_for_action(hk_storage, random_action_key)
