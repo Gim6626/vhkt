@@ -96,7 +96,14 @@ def print_help_for_action(hk_storage, action_key):
 
 
 def print_learning_stats(learning_results):
-    print(f'{learning_results.actions_learned_count} actions learned, {learning_results.actions_learning_in_process_count} in process, {learning_results.actions_to_learn_count} left, {learning_results.actions_count} total')
+    stats_lines = [
+        f'{learning_results.actions_learned_count} actions learned',
+        f'{learning_results.actions_learning_in_process_count} in process',
+        f'{learning_results.actions_guesses_count} guesses',
+        f'{learning_results.actions_to_learn_count} left',
+        f'{learning_results.actions_count} total',
+    ]
+    print(', '.join(stats_lines))
 
 
 def init_custom_logger(logging_level):

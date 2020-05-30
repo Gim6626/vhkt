@@ -73,6 +73,10 @@ class BasicLearningResultsStorage(ABC):
         pass
 
     @abstractmethod
+    def action_guesses(self, action_key) -> int:
+        pass
+
+    @abstractmethod
     def action_learning_in_process(self, action_key) -> bool:
         pass
 
@@ -86,6 +90,14 @@ class BasicLearningResultsStorage(ABC):
         for key in self.actions_keys:
             if self.action_success(key):
                 count += 1
+        return count
+
+    @property
+    def actions_guesses_count(self) -> int:
+        count = 0
+        for key in self.actions_keys:
+            if self.action_guesses(key) is not None:
+                count += self.action_guesses(key)
         return count
 
     @property
@@ -156,6 +168,12 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
             return True
         else:
             return False
+
+    def action_guesses(self, action_key) -> int:
+        if 'guesses' in self._data['actions'][action_key]:
+            return self._data['actions'][action_key]['guesses']
+        else:
+            return None
 
     def action_learning_in_process(self, action_key) -> bool:
         if 'guesses' in self._data['actions'][action_key] \
