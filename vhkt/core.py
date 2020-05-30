@@ -77,6 +77,10 @@ class BasicLearningResultsStorage(ABC):
         pass
 
     @abstractmethod
+    def action_error_guesses(self, action_key) -> int:
+        pass
+
+    @abstractmethod
     def action_learning_in_process(self, action_key) -> bool:
         pass
 
@@ -98,6 +102,14 @@ class BasicLearningResultsStorage(ABC):
         for key in self.actions_keys:
             if self.action_guesses(key) is not None:
                 count += self.action_guesses(key)
+        return count
+
+    @property
+    def actions_error_guesses_count(self) -> int:
+        count = 0
+        for key in self.actions_keys:
+            if self.action_error_guesses(key) is not None:
+                count += self.action_error_guesses(key)
         return count
 
     @property
@@ -175,6 +187,12 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
         else:
             return None
 
+    def action_error_guesses(self, action_key) -> int:
+        if 'error_guesses' in self._data['actions'][action_key]:
+            return self._data['actions'][action_key]['error_guesses']
+        else:
+            return None
+
     def action_learning_in_process(self, action_key) -> bool:
         if 'guesses' in self._data['actions'][action_key] \
                 and self._data['actions'][action_key]['guesses'] > 0:
@@ -209,6 +227,15 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
             else:
                 if self._data['actions'][action_key][correct_guesses_key] > 0:
                     self._data['actions'][action_key][correct_guesses_key] -= 1
+        error_guesses_key = 'error_guesses'
+        if error_guesses_key not in self._data['actions'][action_key]:
+            if not correctness:
+                self._data['actions'][action_key][error_guesses_key] = 1
+            else:
+                self._data['actions'][action_key][error_guesses_key] = 0
+        else:
+            if not correctness:
+                self._data['actions'][action_key][error_guesses_key] += 1
 
     @property
     def all_actions_learned_successfully(self) -> bool:

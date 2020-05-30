@@ -97,9 +97,10 @@ def print_help_for_action(hk_storage, action_key):
 
 def print_learning_stats(learning_results):
     stats_lines = [
-        f'{learning_results.actions_learned_count} actions learned',
+        f'{learning_results.actions_learned_count} action(s) learned',
         f'{learning_results.actions_learning_in_process_count} in process',
-        f'{learning_results.actions_guesses_count} guesses',
+        f'{learning_results.actions_guesses_count} guess(es)',
+        f'{learning_results.actions_error_guesses_count} error guess(es)',
         f'{learning_results.actions_to_learn_count} left',
         f'{learning_results.actions_count} total',
     ]
