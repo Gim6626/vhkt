@@ -22,6 +22,8 @@ def main():
         print(f'Learning results file path not passed, using default "{DEFAULT_LEARNING_RESULTS_FILE}"')
         learning_results_file_path = DEFAULT_LEARNING_RESULTS_FILE
     learning_results = vhkt.core.FileLearningResultsStorage(learning_results_file_path, hk_storage)
+    if not args.LEARNING_RESULTS_FILE:
+        learning_results.save()
     logger.debug('Learning results storage created/loaded')
     print_learning_stats(learning_results)
     all_success = learning_results.all_actions_learned_successfully
