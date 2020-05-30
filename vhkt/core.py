@@ -52,6 +52,9 @@ class FileHotKeysStorage(BasicHotKeysStorage):
     def action_description_by_key(self, key):
         return self._data['actions'][key]['description']
 
+    def key_combination_type_by_key(self, key):
+        return self._data['actions'][key]['type']
+
     def action_hotkeys_by_key(self, key):
         return self._data['actions'][key]['hotkeys']
 
@@ -183,7 +186,7 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
         else:
             if correctness:
                 self._data['actions'][action_key][correct_guesses_key] += 1
-                if self._data['actions'][action_key][correct_guesses_key] == self.CORRECT_ANSWERS_TO_LEARN:
+                if self._data['actions'][action_key][correct_guesses_key] >= self.CORRECT_ANSWERS_TO_LEARN:
                     self.set_action_learned_successfully(action_key)
             else:
                 if self._data['actions'][action_key][correct_guesses_key] > 0:

@@ -32,11 +32,32 @@ def main():
         random_action_key = learning_results.random_nonlearned_action_key
         if random_action_key is None:
             continue
+        key_combination_type = hk_storage.key_combination_type_by_key(random_action_key)
+        if isinstance(key_combination_type, str):
+            key_combination_type_str = key_combination_type
+        elif isinstance(key_combination_type, list):
+            key_combination_type_str = ' or '.join(key_combination_type)
+        else:
+            raise ValueError(f'Bad key combination type "{key_combination_type}", expected str or list')
+        notes = []
+        if 'command' in key_combination_type_str:
+            notes.append('Commands should be prepended with ":"')
+        correct_answers = hk_storage.action_hotkeys_by_key(random_action_key)
+        correct_answers_one_str = ';'.join(correct_answers)
+        if '+' in correct_answers_one_str and '+' not in correct_answers:  # TODO: Make more correct check, what if "Ctrl++"?
+            notes.append('If you need to use Ctrl or other special key in answer, type it\'s name plus regular key like "Ctrl+w"')
+        if ',' in correct_answers_one_str and ',' not in correct_answers:  # TODO: Make more correct check, what if "Ctrl+,"?
+            notes.append('If you need to type several keys combinations one by one, type them with comma separator like "Ctrl+x,Ctrl+x"')
         question \
-            = f'What is hotkey for "{hk_storage.action_description_by_key(random_action_key)}"?'.upper() \
-              + f'\nType* keys combination or "\\h" for help or "\\q" to quit' \
-              + '\n* If you need to use Ctrl or other special key in answer, type it\'s name plus regular key like "Ctrl+w"' \
-              + '\n> '
+            = f'What is {key_combination_type_str} for "{hk_storage.action_description_by_key(random_action_key)}"?'.upper() \
+              + f'\nType keys combination or "\\h" for help or "\\q" to quit'
+        if len(notes) == 1:
+            question += f'\nNOTE: {notes[0]}'
+        elif len(notes) > 1:
+            question += '\nNOTES:'
+            for i, note in enumerate(notes):
+                question += f'\n{i + 1}. {note}'
+        question += '\n> '
         answer = input(question)
         if answer == '\\h':
             print_help_for_action(hk_storage, random_action_key)
@@ -60,6 +81,7 @@ def main():
                     print('You should type "y" or "n"')
                     continue
         print_learning_stats(learning_results)
+        print()
         learning_results.save()
         logger.debug('Learning results saved')
         all_success = learning_results.all_actions_learned_successfully
@@ -70,7 +92,7 @@ def main():
 
 def print_help_for_action(hk_storage, action_key):
     hotkeys_str = '"' + '", "'.join(hk_storage.action_hotkeys_by_key(action_key)) + '"'
-    print(f'Hotkey(s) for "{hk_storage.action_description_by_key(action_key)}": {hotkeys_str}')
+    print(f'Key combination(s) for "{hk_storage.action_description_by_key(action_key)}": {hotkeys_str}')
 
 
 def print_learning_stats(learning_results):
