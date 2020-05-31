@@ -52,7 +52,7 @@ def init_custom_logger(logging_level):
     return lgr
 
 
-if __name__ == '__main__':
+def init_args():
     parser = argparse.ArgumentParser(description='Learn Vim hotkeys')
     parser.add_argument('HOT_KEYS_STORAGE_FILE',
                         help='Path to hot keys info storage file')
@@ -68,7 +68,12 @@ if __name__ == '__main__':
                         choices=['console', 'curses'],
                         default='curses',
                         help='Interface mode')
+    global args
     args = parser.parse_args()
+
+
+if __name__ == '__main__':
+    init_args()
     logging_level = logging.DEBUG if args.debug else logging.INFO
     logger = init_custom_logger(logging_level)
     if args.mode == 'console':
