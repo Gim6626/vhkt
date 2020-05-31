@@ -13,6 +13,12 @@ DEFAULT_LEARNING_RESULTS_FILE = 'lrnres.yaml'
 
 
 def main():
+    hk_storage, learning_results_storage = init_storages()
+    tutor: vhkt.core.BasicTutor = vhkt.core.ConsoleTutor(hk_storage, learning_results_storage)
+    tutor.tutor()
+
+
+def init_storages():
     hk_storage_file_path = args.HOT_KEYS_STORAGE_FILE
     hk_storage = vhkt.core.FileHotKeysStorage(hk_storage_file_path)
     logger.debug('Hot keys storage loaded')
@@ -21,92 +27,10 @@ def main():
     else:
         print(f'Learning results file path not passed, using default "{DEFAULT_LEARNING_RESULTS_FILE}"')
         learning_results_file_path = DEFAULT_LEARNING_RESULTS_FILE
-    learning_results = vhkt.core.FileLearningResultsStorage(learning_results_file_path, hk_storage)
+    learning_results_storage = vhkt.core.FileLearningResultsStorage(learning_results_file_path, hk_storage)
     if not args.LEARNING_RESULTS_FILE:
-        learning_results.save()
-    logger.debug('Learning results storage created/loaded')
-    print_learning_stats(learning_results)
-    all_success = learning_results.all_actions_learned_successfully
-    if all_success:
-        print('All hotkeys are learned, nothing to do')
-        return 0
-    while True:
-        random_action_key = learning_results.random_nonlearned_action_key
-        if random_action_key is None:
-            continue
-        key_combination_type = hk_storage.key_combination_type_by_key(random_action_key)
-        if isinstance(key_combination_type, str):
-            key_combination_type_str = key_combination_type
-        elif isinstance(key_combination_type, list):
-            key_combination_type_str = ' or '.join(key_combination_type)
-        else:
-            raise ValueError(f'Bad key combination type "{key_combination_type}", expected str or list')
-        notes = []
-        if 'command' in key_combination_type_str:
-            notes.append('Commands should be prepended with ":"')
-        correct_answers = hk_storage.action_hotkeys_by_key(random_action_key)
-        correct_answers_one_str = ';'.join(correct_answers)
-        if '+' in correct_answers_one_str and '+' not in correct_answers:  # TODO: Make more correct check, what if "Ctrl++"?
-            notes.append('If you need to use Ctrl or other special key in answer, type it\'s name plus regular key like "Ctrl+w"')
-        if ',' in correct_answers_one_str and ',' not in correct_answers:  # TODO: Make more correct check, what if "Ctrl+,"?
-            notes.append('If you need to type several keys combinations one by one, type them with comma separator like "Ctrl+x,Ctrl+x"')
-        question \
-            = f'What is {key_combination_type_str} for "{hk_storage.action_description_by_key(random_action_key)}"?'.upper() \
-              + f'\nType keys combination or "\\h" for help or "\\q" to quit'
-        if len(notes) == 1:
-            question += f'\nNOTE: {notes[0]}'
-        elif len(notes) > 1:
-            question += '\nNOTES:'
-            for i, note in enumerate(notes):
-                question += f'\n{i + 1}. {note}'
-        question += '\n> '
-        answer = input(question)
-        if answer == '\\h':
-            print_help_for_action(hk_storage, random_action_key)
-        elif answer == '\\q':
-            return 0
-        elif answer in hk_storage.action_hotkeys_by_key(random_action_key):
-            learning_results.set_action_guess_correct(random_action_key)
-            print('Correct!')
-        else:
-            learning_results.set_action_guess_wrong(random_action_key)
-            print('Wrong!')
-            while True:
-                question2 = 'Want to see correct answer? [y/n]: '
-                answer2 = input(question2)
-                if answer2 == 'y':
-                    print_help_for_action(hk_storage, random_action_key)
-                    break
-                elif answer2 == 'n':
-                    break
-                else:
-                    print('You should type "y" or "n"')
-                    continue
-        print_learning_stats(learning_results)
-        print()
-        learning_results.save()
-        logger.debug('Learning results saved')
-        all_success = learning_results.all_actions_learned_successfully
-        if all_success:
-            print('All hotkeys are learned, nothing more to do')
-            return 0
-
-
-def print_help_for_action(hk_storage, action_key):
-    hotkeys_str = '"' + '", "'.join(hk_storage.action_hotkeys_by_key(action_key)) + '"'
-    print(f'Key combination(s) for "{hk_storage.action_description_by_key(action_key)}": {hotkeys_str}')
-
-
-def print_learning_stats(learning_results):
-    stats_lines = [
-        f'{learning_results.actions_learned_count} action(s) learned',
-        f'{learning_results.actions_learning_in_process_count} in process',
-        f'{learning_results.actions_guesses_count} guess(es)',
-        f'{learning_results.actions_error_guesses_count} error guess(es)',
-        f'{learning_results.actions_to_learn_count} left',
-        f'{learning_results.actions_count} total',
-    ]
-    print(', '.join(stats_lines))
+        learning_results_storage.save()
+    return hk_storage, learning_results_storage
 
 
 def init_custom_logger(logging_level):
@@ -135,7 +59,15 @@ if __name__ == '__main__':
                         '--debug',
                         action='store_true',
                         help='Debug mode')
+    parser.add_argument('-m',
+                        '--mode',
+                        choices=['console', 'curses'],
+                        default='console',
+                        help='Interface mode')
     args = parser.parse_args()
     logging_level = logging.DEBUG if args.debug else logging.INFO
     logger = init_custom_logger(logging_level)
-    sys.exit(main())
+    if args.mode == 'console':
+        sys.exit(main())
+    else:
+        raise NotImplementedError('"curses" mode not implemented yet')
