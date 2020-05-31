@@ -5,6 +5,8 @@ try:
     import yaml
     import os.path
     import random
+    import string
+    import curses
     from enum import Enum
     from abc import ABC, abstractmethod, abstractproperty
 except ModuleNotFoundError as e:
@@ -61,7 +63,18 @@ class FileHotKeysStorage(BasicHotKeysStorage):
         return self._data['actions'][key]['type']
 
     def action_hotkeys_by_key(self, key):
-        return self._data['actions'][key]['hotkeys']
+        hotkeys_mod = []
+        for hotkey in self._data['actions'][key]['hotkeys']:
+            if isinstance(hotkey, list):
+                hotkeys_mod.append(hotkey)
+            elif isinstance(hotkey, str):
+                if len(hotkey) == 1:
+                    hotkeys_mod.append(hotkey)
+                elif ':' in hotkey:
+                    hotkeys_mod.append(hotkey)
+                else:
+                    hotkeys_mod.append(list(hotkey))
+        return hotkeys_mod
 
 
 class BasicLearningResultsStorage(ABC):
@@ -200,7 +213,9 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
 
     def action_learning_in_process(self, action_key) -> bool:
         if 'guesses' in self._data['actions'][action_key] \
-                and self._data['actions'][action_key]['guesses'] > 0:
+                and self._data['actions'][action_key]['guesses'] > 0 \
+                and ('success' not in self._data['actions'][action_key]
+                     or not self._data['actions'][action_key]['success']):
             return True
         else:
             return False
@@ -287,21 +302,28 @@ class BasicTutor(ABC):
             = learning_results_storage
         self.random_action_key = None
 
+    def before_question(self):
+        pass
+
     def tutor(self):
         self.show_learning_stats()
         all_success = self.learning_results_storage.all_actions_learned_successfully
+        success_str = 'All hotkeys are learned, nothing to do'
         if all_success:
-            self.print('All hotkeys are learned, nothing to do')
+            self.print(success_str)
+            self.on_exit()
             return
         while True:
+            self.before_question()
             action_key, question = self.prepare_question()
-            answer_type, answer = self.answer_for_question(question)
+            answer_type, answer_blocks = self.answer_for_question(question)
             if answer_type == self.AnswerType.HELP:
                 self.show_help_for_action(action_key)
             elif answer_type == self.AnswerType.QUIT:
                 return 0
             elif answer_type == self.AnswerType.REGULAR_ANSWER:
-                if answer in self.hk_storage.action_hotkeys_by_key(action_key):
+                if len(answer_blocks) > 1 and answer_blocks in self.hk_storage.action_hotkeys_by_key(action_key) \
+                        or len(answer_blocks) == 1 and answer_blocks[0] in self.hk_storage.action_hotkeys_by_key(action_key):
                     self.learning_results_storage.set_action_guess_correct(action_key)
                     self.print('Correct!')
                 else:
@@ -309,12 +331,12 @@ class BasicTutor(ABC):
                     self.print('Wrong!')
                     while True:
                         question = 'Want to see correct answer? [y/n]: '
-                        answer_type, answer = self.answer_for_question(question)
+                        answer_type, answer_blocks = self.answer_for_question(question)
                         if answer_type == self.AnswerType.REGULAR_ANSWER:
-                            if answer == 'y':
+                            if answer_blocks == ['y']:
                                 self.show_help_for_action(action_key)
                                 break
-                            elif answer == 'n':
+                            elif answer_blocks == ['n']:
                                 break
                             else:
                                 self.print('You should type "y" or "n"')
@@ -328,19 +350,27 @@ class BasicTutor(ABC):
             self.learning_results_storage.save()
             all_success = self.learning_results_storage.all_actions_learned_successfully
             if all_success:
-                self.print('All hotkeys are learned, nothing more to do')
+                self.print(success_str)
+                self.on_exit()
                 return
 
-    @abstractmethod
-    def show_learning_stats(self):
-        pass
-
-    @abstractmethod
     def show_help_for_action(self, action_key):
-        pass
+        helps = []
+        for hotkey in self.hk_storage.action_hotkeys_by_key(action_key):
+            if isinstance(hotkey, list):
+                helps.append(','.join([f'{h}' for h in hotkey]))
+            elif isinstance(hotkey, str):
+                helps.append(f'"{hotkey}"')
+            else:
+                raise NotImplementedError
+        hotkeys_str = ' or '.join(helps)
+        self.print(f'\nKey combination(s) for "{self.hk_storage.action_description_by_key(action_key)}": {hotkeys_str}')
 
     @abstractmethod
-    def print(self, *args, **kwargs):
+    def print(self, msg):
+        pass
+
+    def on_exit(self):
         pass
 
     def prepare_question(self):
@@ -357,14 +387,14 @@ class BasicTutor(ABC):
             raise ValueError(f'Bad key combination type "{key_combination_type}", expected str or list')
         notes = self.notes_for_asked_action(random_action_key)
         question \
-            = f'What is {key_combination_type_str} for "{self.hk_storage.action_description_by_key(random_action_key)}"?'.upper() \
-              + f'\nType keys combination or "\\h" for help or "\\q" to quit'
+            = f'What is {key_combination_type_str} for "{self.hk_storage.action_description_by_key(random_action_key)}"?'.upper()
         if len(notes) == 1:
             question += f'\nNOTE: {notes[0]}'
         elif len(notes) > 1:
             question += '\nNOTES:'
             for i, note in enumerate(notes):
                 question += f'\n{i + 1}. {note}'
+        question += '\n> '
         return random_action_key, question
 
     @abstractmethod
@@ -381,31 +411,26 @@ class BasicTutor(ABC):
     def after_answer(self):
         pass
 
-
-class ConsoleTutor(BasicTutor):
-
-    def print(self, *args, **kwargs):
-        print(*args, **kwargs)
-
     def show_learning_stats(self):
         stats_lines = [
             f'{self.learning_results_storage.actions_learned_count} action(s) learned',
             f'{self.learning_results_storage.actions_learning_in_process_count} in process',
             f'{self.learning_results_storage.actions_guesses_count} guess(es)',
             f'{self.learning_results_storage.actions_error_guesses_count} error guess(es)',
-            f'{self.learning_results_storage.actions_to_learn_count} left',
-            f'{self.learning_results_storage.actions_count} total',
+            f'{self.learning_results_storage.actions_to_learn_count} action(s) left to learn',
+            f'{self.learning_results_storage.actions_count} action(s) total to learn',
         ]
         self.print(', '.join(stats_lines))
 
-    def show_help_for_action(self, action_key):
-        hotkeys_str = '"' + '", "'.join(self.hk_storage.action_hotkeys_by_key(action_key)) + '"'
-        self.print(f'Key combination(s) for "{self.hk_storage.action_description_by_key(action_key)}": {hotkeys_str}')
 
-    def prepare_question(self):
-        action_key, question = super().prepare_question()
-        question += '\n> '
-        return action_key, question
+class ConsoleTutor(BasicTutor):
+
+    def print(self, msg):
+        print(msg)
+
+    def show_help_for_action(self, action_key):
+        super().show_help_for_action(action_key)
+        input('Press any key to continue')
 
     def answer_for_question(self, question):
         answer = input(question)
@@ -415,17 +440,100 @@ class ConsoleTutor(BasicTutor):
             answer_type = self.AnswerType.QUIT
         else:
             answer_type = self.AnswerType.REGULAR_ANSWER
-        return answer_type, answer
+        return answer_type, answer.split(',')
 
     def notes_for_asked_action(self, action_key):
         notes = super().notes_for_asked_action(action_key)
         correct_answers = self.hk_storage.action_hotkeys_by_key(action_key)
-        correct_answers_one_str = ';'.join(correct_answers)
-        if '+' in correct_answers_one_str and '+' not in correct_answers:  # TODO: Make more correct check, what if "Ctrl++"?
-            notes.append('If you need to use Ctrl or other special key in answer, type it\'s name plus regular key like "Ctrl+w"')
-        if ',' in correct_answers_one_str and ',' not in correct_answers:  # TODO: Make more correct check, what if "Ctrl+,"?
-            notes.append('If you need to type several keys combinations one by one, type them with comma separator like "Ctrl+x,Ctrl+x"')
+        list_found = False
+        ctrl_found = False
+        several_keys_note = 'If you need to type several keys combinations one by one, type them with comma separator like "a,b"'
+        ctrl_note = 'If you need to use Ctrl or other special key in answer, type it\'s name plus regular key like "Ctrl+w"'
+        for correct_answer in correct_answers:
+            if isinstance(correct_answer, list):
+                if not list_found:
+                    notes.append(several_keys_note)
+                    list_found = True
+                elif 'Ctrl' in correct_answer and not ctrl_found:
+                    notes.append(ctrl_note)
+                    ctrl_found = True
+            elif isinstance(correct_answer, str):
+                if 'Ctrl' in correct_answer and not ctrl_found:
+                    notes.append(ctrl_note)
+                    ctrl_found = True
+        notes.append('Type keys combination or "\\h" for help or "\\q" to quit')
         return notes
 
     def after_answer(self):
-        self.print()
+        self.print('')
+
+
+class CursesTutor(BasicTutor):
+
+    def __init__(self, hk_storage, learning_results_storage, window):
+        super().__init__(hk_storage, learning_results_storage)
+        self.window = window
+
+    def show_help_for_action(self, action_key):
+        super().show_help_for_action(action_key)
+        self.print('Press any key to continue', newline=False)
+        self.window.getkey()
+
+    def on_exit(self):
+        self.print('Press any key to exit', newline=False)
+        self.window.getkey()
+
+    def print(self, msg, newline=True):
+        if newline:
+            msg += '\n'
+        self.window.addstr(msg)
+
+    def notes_for_asked_action(self, action_key):
+        notes = super().notes_for_asked_action(action_key)
+        notes.append('Type keys combination or "Ctrl+h" for help or "Ctrl+e" to quit')
+        return notes
+
+    def answer_for_question(self, question):
+        self.print(question, newline=False)
+        answer_blocks = []
+        last_combo = False
+        while True:
+            key = self.window.getkey()
+            if key in string.ascii_lowercase or key in string.ascii_uppercase:
+                key_modified = key
+            elif len(key) == 1 and 1 <= ord(key) <= 32:
+                key_modified = f'Ctrl+{string.ascii_lowercase[ord(key) - 1]}'
+                last_combo = True
+            else:
+                key_modified = key
+            if key_modified != 'Ctrl+j':
+                if last_combo and len(answer_blocks) > 0:
+                    self.print(',', newline=False)
+                    last_combo = False
+                self.print(key_modified, newline=False)
+            else:
+                self.print(key, newline=False)
+            answer_blocks.append(key_modified)
+            if key == os.linesep \
+                    or key_modified == 'Ctrl+h' \
+                    or key_modified == 'Ctrl+e':
+                break
+        if answer_blocks == ['Ctrl+h']:
+            answer_type = self.AnswerType.HELP
+        elif answer_blocks == ['Ctrl+e']:
+            answer_type = self.AnswerType.QUIT
+        else:
+            answer_type = self.AnswerType.REGULAR_ANSWER
+        answer_blocks = answer_blocks[:-1]
+        if len(answer_blocks) > 1 and answer_blocks[0] == ':':
+            s = ''
+            for c in answer_blocks:
+                s += c
+            answer_blocks = [s]
+        return answer_type, answer_blocks
+
+    def before_question(self):
+        self.window.clear()
+
+    def after_answer(self):
+        self.print('')

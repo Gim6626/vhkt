@@ -149,7 +149,7 @@ actions:
     description: 'Go to beginning of file'
     type: 'hotkey'
     hotkeys:
-      - 'g,g'
+      - 'gg'
   go_to_end_of_file:
     description: 'Go to end of file'
     type: 'hotkey'
@@ -202,7 +202,9 @@ actions:
     description: 'Cycle between splits'
     type: 'hotkey'
     hotkeys:
-      - 'Ctrl+w,Ctrl+w'
+      -
+        - 'Ctrl+w'
+        - 'Ctrl+w'
   new_tab:
     description: 'New tab'
     type: 'command'

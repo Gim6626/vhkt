@@ -4,6 +4,8 @@
 import logging
 import sys
 import argparse
+import os
+import curses
 
 import vhkt.core
 
@@ -12,9 +14,13 @@ args = None
 DEFAULT_LEARNING_RESULTS_FILE = 'lrnres.yaml'
 
 
-def main():
+def main(window=None):
     hk_storage, learning_results_storage = init_storages()
-    tutor: vhkt.core.BasicTutor = vhkt.core.ConsoleTutor(hk_storage, learning_results_storage)
+    tutor: vhkt.core.BasicTutor
+    if window is None:
+        tutor = vhkt.core.ConsoleTutor(hk_storage, learning_results_storage)
+    else:
+        tutor = vhkt.core.CursesTutor(hk_storage, learning_results_storage, window)
     tutor.tutor()
 
 
@@ -42,9 +48,7 @@ def init_custom_logger(logging_level):
     h.flush = sys.stderr.flush
     lgr.addHandler(h)
     lgr.setLevel(logging_level)
-
     lgr.propagate = False
-
     return lgr
 
 
@@ -62,7 +66,7 @@ if __name__ == '__main__':
     parser.add_argument('-m',
                         '--mode',
                         choices=['console', 'curses'],
-                        default='console',
+                        default='curses',
                         help='Interface mode')
     args = parser.parse_args()
     logging_level = logging.DEBUG if args.debug else logging.INFO
@@ -70,4 +74,4 @@ if __name__ == '__main__':
     if args.mode == 'console':
         sys.exit(main())
     else:
-        raise NotImplementedError('"curses" mode not implemented yet')
+        curses.wrapper(main)
