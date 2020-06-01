@@ -358,7 +358,7 @@ class BasicTutor(ABC):
         helps = []
         for hotkey in self.hk_storage.action_hotkeys_by_key(action_key):
             if isinstance(hotkey, list):
-                helps.append(','.join([f'{h}' for h in hotkey]))
+                helps.append('"' + ','.join([f'{h}' for h in hotkey]) + '"')
             elif isinstance(hotkey, str):
                 helps.append(f'"{hotkey}"')
             else:
