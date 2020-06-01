@@ -116,6 +116,10 @@ class BasicLearningResultsStorage(ABC):
                 count += 1
         return count
 
+    @abstractmethod
+    def remove_results_for_action(self, action_key):
+        pass
+
     @property
     def actions_guesses_count(self) -> int:
         count = 0
@@ -189,6 +193,10 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
         for key in hk_storage.actions_keys:
             if key not in self.actions_keys:
                 self._data['actions'][key] = {}
+        self._prev_action_key = None
+
+    def remove_results_for_action(self, action_key):
+        del self._data['actions'][action_key]
 
     @property
     def actions_keys(self):
@@ -275,12 +283,21 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
 
     @property
     def random_nonlearned_action_key(self):
-        for _ in range(5):
+        repeats = 0
+        repeats_limit = 5
+        while True:
+            if self.all_actions_learned_successfully:
+                return None
             random_action_key_index = random.randint(0, len(self.actions_keys) - 1)
             random_action_key = self.actions_keys[random_action_key_index]
             if random_action_key in self.actions_keys \
                     and self.action_success(random_action_key):
                 continue
+            if random_action_key == self._prev_action_key \
+                    and repeats < repeats_limit:
+                repeats += 1
+                continue
+            self._prev_action_key = random_action_key
             return random_action_key
         return None
 
@@ -307,11 +324,15 @@ class BasicTutor(ABC):
     def before_question(self):
         pass
 
+    def before_success(self):
+        pass
+
     def tutor(self):
         self.show_learning_stats()
         all_success = self.learning_results_storage.all_actions_learned_successfully
         success_str = 'All hotkeys are learned, nothing to do'
         if all_success:
+            self.before_success()
             self.print(success_str)
             self.on_exit()
             return
@@ -352,6 +373,7 @@ class BasicTutor(ABC):
             self.learning_results_storage.save()
             all_success = self.learning_results_storage.all_actions_learned_successfully
             if all_success:
+                self.before_success()
                 self.print(success_str)
                 self.on_exit()
                 return
@@ -376,11 +398,18 @@ class BasicTutor(ABC):
         pass
 
     def prepare_question(self):
-        random_action_key = self.learning_results_storage.random_nonlearned_action_key
-        if random_action_key is None:
-            # TODO: Handle correctly
-            raise Exception('random_action_key is None')
-        key_combination_type = self.hk_storage.key_combination_type_by_key(random_action_key)
+        while True:
+            random_action_key = self.learning_results_storage.random_nonlearned_action_key
+            if random_action_key is None:
+                raise Exception('random_action_key is None')
+            try:
+                key_combination_type = self.hk_storage.key_combination_type_by_key(random_action_key)
+                break
+            except KeyError as err:
+                if random_action_key in str(err):
+                    self.learning_results_storage.remove_results_for_action(random_action_key)
+                else:
+                    raise err
         if isinstance(key_combination_type, str):
             key_combination_type_str = key_combination_type
         elif isinstance(key_combination_type, list):
@@ -531,6 +560,9 @@ class CursesTutor(BasicTutor):
                 s += c
             answer_blocks = [s]
         return answer_type, answer_blocks
+
+    def before_success(self):
+        self.window.clear()
 
     def before_question(self):
         self.window.clear()
