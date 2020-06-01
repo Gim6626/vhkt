@@ -72,6 +72,8 @@ class FileHotKeysStorage(BasicHotKeysStorage):
                     hotkeys_mod.append(hotkey)
                 elif ':' in hotkey:
                     hotkeys_mod.append(hotkey)
+                elif 'Ctrl' in hotkey:
+                    hotkeys_mod.append(hotkey)
                 else:
                     hotkeys_mod.append(list(hotkey))
         return hotkeys_mod
@@ -476,8 +478,6 @@ class CursesTutor(BasicTutor):
 
     def show_help_for_action(self, action_key):
         super().show_help_for_action(action_key)
-        self.print('Press any key to continue', newline=False)
-        self.window.getkey()
 
     def on_exit(self):
         self.print('Press any key to exit', newline=False)
@@ -536,4 +536,5 @@ class CursesTutor(BasicTutor):
         self.window.clear()
 
     def after_answer(self):
-        self.print('')
+        self.print('Press any key to continue')
+        self.window.getkey()
