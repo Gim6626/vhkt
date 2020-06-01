@@ -9,8 +9,8 @@ actions:
     type: 'hotkey'
     hotkeys:
       - 'Ctrl+v'
-  delete:
-    description: 'Delete'
+  removal_prefix_key:
+    description: 'Removal prefix key'
     type: 'hotkey'
     hotkeys:
       - 'd'
@@ -183,16 +183,60 @@ actions:
     type: 'hotkey'
     hotkeys:
       - '{'
+  delete_inside_brackets:
+    description: 'Delete inside brackets'
+    type: 'hotkey'
+    hotkeys:
+      - 'di)'
+      - 'di('
+  delete_inside_curly_brackets:
+    description: 'Delete inside curly brackets'
+    type: 'hotkey'
+    hotkeys:
+      - 'di}'
+      - 'di{'
+  delete_current_line:
+    description: 'Delete current line'
+    type: 'hotkey'
+    hotkeys:
+      - 'dd'
+  delete_current_and_previous_n_lines:
+    description: 'Delete current and previous N lines'
+    type: 'hotkey'
+    hotkeys:
+      - 'dNk'
+  delete_current_and_next_n_lines:
+    description: 'Delete current and next N lines'
+    type: 'hotkey'
+    hotkeys:
+      - 'dNj'
+  delete_till_next_word:
+    description: 'Delete till next word'
+    type: 'hotkey'
+    hotkeys:
+      - 'dw'
+  delete_till_beginning_of_current_word:
+    description: 'Delete till beginning of current word'
+    type: 'hotkey'
+    hotkeys:
+      - 'db'
+  delete_till_end_of_current_word:
+    description: 'Delete till end of current word'
+    type: 'hotkey'
+    hotkeys:
+      - 'de'
   split_horizontally:
     description: 'Split horizontally'
     type: 'command'
     hotkeys:
       - ':sp'
+      - ':split'
   split_vertically:
     description: 'Split vertically'
     type: 'command'
     hotkeys:
       - ':vsp'
+      - ':vsplit'
   close_all_other_splits:
     description: 'Close all other splits'
     type: 'command'
