@@ -534,21 +534,34 @@ class CursesTutor(BasicTutor):
         last_combo = False
         while True:
             key = self.window.getkey()
+            ignore_flag = False
             if key in string.ascii_lowercase or key in string.ascii_uppercase:
                 key_modified = key
             elif len(key) == 1 and 1 <= ord(key) <= 32:
                 key_modified = f'Ctrl+{string.ascii_lowercase[ord(key) - 1]}'
                 last_combo = True
+            elif key == 'KEY_BACKSPACE':
+                if len(answer_blocks) > 0:
+                    self.print('\b \b', newline=False)
+                    del answer_blocks[-1]
+                key_modified = ''
+                ignore_flag = True
+            elif key in ['KEY_UP', 'KEY_DOWN', 'KEY_LEFT', 'KEY_RIGHT']:
+                key_modified = ''
+                ignore_flag = True
             else:
                 key_modified = key
-            if key_modified != 'Ctrl+j':
-                if last_combo and len(answer_blocks) > 0:
-                    self.print(',', newline=False)
-                    last_combo = False
-                self.print(key_modified, newline=False)
-            else:
-                self.print(key, newline=False)
-            answer_blocks.append(key_modified)
+
+            if not ignore_flag:
+                if key_modified != 'Ctrl+j':
+                    if last_combo and len(answer_blocks) > 0:
+                        self.print(',', newline=False)
+                        last_combo = False
+                    self.print(key_modified, newline=False)
+                else:
+                    self.print(key, newline=False)
+                answer_blocks.append(key_modified)
+
             if key == os.linesep \
                     or key_modified == 'Ctrl+h' \
                     or key_modified == 'Ctrl+e':
