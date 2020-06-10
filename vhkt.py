@@ -18,9 +18,9 @@ def main(window=None):
     hk_storage, learning_results_storage = init_storages()
     tutor: vhkt.core.BasicTutor
     if args.mode == vhkt.core.Mode.SIMPLE_TEXT:
-        tutor = vhkt.core.ConsoleTutor(hk_storage, learning_results_storage)
+        tutor = vhkt.core.SimpleTextTutor(hk_storage, learning_results_storage)
     elif args.mode == vhkt.core.Mode.CURSES_TEXT:
-        tutor = vhkt.core.CursesTutor(hk_storage, learning_results_storage, window)
+        tutor = vhkt.core.CursesTextTutor(hk_storage, learning_results_storage, window)
     else:
         raise NotImplementedError(f'Interface mode "{args.mode}" not supported yet')
     tutor.tutor()

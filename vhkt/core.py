@@ -460,7 +460,7 @@ class BasicTutor(ABC):
         self.print(', '.join(stats_lines))
 
 
-class ConsoleTutor(BasicTutor):
+class SimpleTextTutor(BasicTutor):
 
     def print(self, msg):
         print(msg)
@@ -505,7 +505,7 @@ class ConsoleTutor(BasicTutor):
         self.print('')
 
 
-class CursesTutor(BasicTutor):
+class CursesTextTutor(BasicTutor):
 
     def __init__(self, hk_storage, learning_results_storage, window):
         super().__init__(hk_storage, learning_results_storage)
