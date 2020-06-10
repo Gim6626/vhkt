@@ -22,6 +22,12 @@ except ModuleNotFoundError as e:
     sys.exit(1)
 
 
+class Mode(Enum):
+    SIMPLE_TEXT = 'simple-text'
+    CURSES_TEXT = 'curses-text'
+    CURSES_TUI = 'curses-tui'
+
+
 class BasicHotKeysStorage(ABC):
 
     @property

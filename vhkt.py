@@ -17,10 +17,12 @@ DEFAULT_LEARNING_RESULTS_FILE = 'lrnres.yaml'
 def main(window=None):
     hk_storage, learning_results_storage = init_storages()
     tutor: vhkt.core.BasicTutor
-    if window is None:
+    if args.mode == vhkt.core.Mode.SIMPLE_TEXT:
         tutor = vhkt.core.ConsoleTutor(hk_storage, learning_results_storage)
-    else:
+    elif args.mode == vhkt.core.Mode.CURSES_TEXT:
         tutor = vhkt.core.CursesTutor(hk_storage, learning_results_storage, window)
+    else:
+        raise NotImplementedError(f'Interface mode "{args.mode}" not supported yet')
     tutor.tutor()
 
 
@@ -65,18 +67,19 @@ def init_args():
                         help='Debug mode')
     parser.add_argument('-m',
                         '--mode',
-                        choices=['console', 'curses'],
-                        default='curses',
+                        choices=[m.value for m in vhkt.core.Mode],
+                        default=vhkt.core.Mode.CURSES_TEXT,
                         help='Interface mode')
     global args
     args = parser.parse_args()
+    args.mode = vhkt.core.Mode(args.mode)
 
 
 if __name__ == '__main__':
     init_args()
     logging_level = logging.DEBUG if args.debug else logging.INFO
     logger = init_custom_logger(logging_level)
-    if args.mode == 'console':
+    if args.mode == vhkt.core.Mode.SIMPLE_TEXT:
         sys.exit(main())
     else:
         curses.wrapper(main)
