@@ -317,7 +317,7 @@ class BasicTutor(ABC):
 
     class AnswerType(Enum):
         HELP = 'help'
-        QUIT = 'quit'
+        EXIT = 'exit'
         REGULAR_ANSWER = 'regular_answer'
 
     def __init__(self, hk_storage, learning_results_storage):
@@ -348,7 +348,7 @@ class BasicTutor(ABC):
             answer_type, answer_blocks = self.answer_for_question(question)
             if answer_type == self.AnswerType.HELP:
                 self.show_help_for_action(action_key)
-            elif answer_type == self.AnswerType.QUIT:
+            elif answer_type == self.AnswerType.EXIT:
                 return 0
             elif answer_type == self.AnswerType.REGULAR_ANSWER:
                 if len(answer_blocks) > 1 and answer_blocks in self.hk_storage.action_hotkeys_by_key(action_key) \
@@ -473,8 +473,8 @@ class ConsoleTutor(BasicTutor):
         answer = input(question)
         if answer == '\\h':
             answer_type = self.AnswerType.HELP
-        elif answer == '\\q':
-            answer_type = self.AnswerType.QUIT
+        elif answer == '\\e':
+            answer_type = self.AnswerType.EXIT
         else:
             answer_type = self.AnswerType.REGULAR_ANSWER
         return answer_type, answer.split(',')
@@ -498,7 +498,7 @@ class ConsoleTutor(BasicTutor):
                 if 'Ctrl' in correct_answer and not ctrl_found:
                     notes.append(ctrl_note)
                     ctrl_found = True
-        notes.append('Type keys combination or "\\h" for help or "\\q" to quit')
+        notes.append('Type keys combination or "\\h" for help or "\\e" to exit')
         return notes
 
     def after_answer(self):
@@ -556,7 +556,7 @@ class CursesTutor(BasicTutor):
         if answer_blocks == ['Ctrl+h']:
             answer_type = self.AnswerType.HELP
         elif answer_blocks == ['Ctrl+e']:
-            answer_type = self.AnswerType.QUIT
+            answer_type = self.AnswerType.EXIT
         else:
             answer_type = self.AnswerType.REGULAR_ANSWER
         answer_blocks = answer_blocks[:-1]
