@@ -4,7 +4,7 @@ actions:
     type: 'hotkey'
     hotkeys:
       - 'v'
-  horizontal_visual:
+  vertical_visual:
     description: 'Vertical visual/selection'
     type: 'hotkey'
     hotkeys:
