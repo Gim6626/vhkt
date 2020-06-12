@@ -164,6 +164,13 @@ class CursesTuiTutor(BasicTutor):
         self.window.attroff(curses.color_pair(ColorMode.STATUS_BAR.value))
 
     def tutor(self):
+        try:
+            self._tutor_internal()
+        except Exception as e:
+            if str(e) == 'addwstr() returned ERR':
+                raise Exception('Curses error, possible too small screen. If not - sorry and contact developers please.')
+
+    def _tutor_internal(self):
         # TODO: Think about implementing more universal basic tutor
         # TODO: Handle too little screen
         self._prepare()
