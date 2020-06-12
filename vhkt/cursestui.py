@@ -116,8 +116,8 @@ class CursesTuiTutor(BasicTutor):
 
     @property
     def _statusbar_str(self):
-        # TODO: Show state only in debug mode
         s = f'Press "Ctrl+e" to exit or "Ctrl+h" for help'
+        # TODO: Align debug message right
         if self._debug_msg is not None:
             s += ' | ' + self._debug_msg
         return s
@@ -165,6 +165,7 @@ class CursesTuiTutor(BasicTutor):
 
     def tutor(self):
         # TODO: Think about implementing more universal basic tutor
+        # TODO: Handle too little screen
         self._prepare()
         k = 0
         while True:
@@ -284,10 +285,6 @@ class CursesTuiTutor(BasicTutor):
                     continue
             else:
                 raise ValueError(f'Invalid interface state "{self._interface_state}"')
-
-            # if k == curses.KEY_BACKSPACE:
-            #     # TODO: Handle
-            #     continue
 
             self._render_display_blocks()
 
