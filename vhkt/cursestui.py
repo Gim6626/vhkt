@@ -27,7 +27,8 @@ class InterfaceState(Enum):
     CHECKING_IF_HELP_IS_NEEDED = 'checking-if-help-is-needed'
     SHOWING_HELP = 'showing-help'
     ALL_SUCCESS = 'all-success'
-    PENDING_ENTER_TO_PROCEED_TO_QUESTIONS = 'pending-enter'
+    PENDING_ENTER_TO_PROCEED_TO_NEXT_STEP = 'pending-enter'
+    QUIT = 'quit'
 
 
 class DisplayBlock:
@@ -113,6 +114,7 @@ class CursesTuiTutor(BasicTutor):
         self._interface_state: InterfaceState = InterfaceState.ASKING_QUESTION
         self._debug_msg = None
         self._action_key = None
+        self._next_interface_state: InterfaceState = None  # Used only to choose next step for PENDING_ENTER_TO_PROCEED_TO_NEXT_STEP
 
     @property
     def _statusbar_str(self):
@@ -184,12 +186,20 @@ class CursesTuiTutor(BasicTutor):
                 break
 
             all_success = self.learning_results_storage.all_actions_learned_successfully
-            if all_success:
+            if all_success \
+                    and self._interface_state != InterfaceState.PENDING_ENTER_TO_PROCEED_TO_NEXT_STEP\
+                    and self._interface_state != InterfaceState.QUIT:
                 self._interface_state = InterfaceState.ALL_SUCCESS
 
             if self._interface_state == InterfaceState.ALL_SUCCESS:
-                self._display_blocks = [DisplayBlock(ColorMode.SUCCESS,
-                                                     self.success_string)]
+                self._display_blocks = [
+                    DisplayBlock(ColorMode.SUCCESS,
+                                 self.success_string),
+                    DisplayBlock(ColorMode.REGULAR,
+                                 'Press ENTER to continue'),
+                ]
+                self._interface_state = InterfaceState.PENDING_ENTER_TO_PROCEED_TO_NEXT_STEP
+                self._next_interface_state = InterfaceState.QUIT
             elif self._interface_state == InterfaceState.ASKING_QUESTION:
                 self._action_key, question, notes = self.prepare_question()
                 self._display_blocks = [
@@ -269,7 +279,8 @@ class CursesTuiTutor(BasicTutor):
                 ]
                 self.learning_results_storage.set_action_guess_correct(self._action_key)
                 self.learning_results_storage.save()
-                self._interface_state = InterfaceState.PENDING_ENTER_TO_PROCEED_TO_QUESTIONS
+                self._interface_state = InterfaceState.PENDING_ENTER_TO_PROCEED_TO_NEXT_STEP
+                self._next_interface_state = InterfaceState.ASKING_QUESTION
             elif self._interface_state == InterfaceState.INCORRECT_ANSWER:
                 self._display_blocks = [
                     DisplayBlock(ColorMode.ERROR, 'Incorrect!'),
@@ -301,11 +312,15 @@ class CursesTuiTutor(BasicTutor):
                     DisplayBlock(ColorMode.REGULAR,
                                  'Press ENTER to continue'),
                 ]
-                self._interface_state = InterfaceState.PENDING_ENTER_TO_PROCEED_TO_QUESTIONS
-            elif self._interface_state == InterfaceState.PENDING_ENTER_TO_PROCEED_TO_QUESTIONS:
+                self._interface_state = InterfaceState.PENDING_ENTER_TO_PROCEED_TO_NEXT_STEP
+                self._next_interface_state = InterfaceState.ASKING_QUESTION
+            elif self._interface_state == InterfaceState.PENDING_ENTER_TO_PROCEED_TO_NEXT_STEP:
                 if k == 10:
-                    self._interface_state = InterfaceState.ASKING_QUESTION
+                    self._interface_state = self._next_interface_state
+                    self._next_interface_state = None
                     continue
+            elif self._interface_state == InterfaceState.QUIT:
+                break
             else:
                 raise ValueError(f'Invalid interface state "{self._interface_state}"')
 
