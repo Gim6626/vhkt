@@ -189,8 +189,21 @@ class CursesTuiTutor(BasicTutor):
                 self._display_blocks = [
                     DisplayBlock(ColorMode.QUESTION,
                                  question),
+                ]
+                notes_mod = []
+                if len(notes) == 1:
+                    notes_mod.append(f'NOTE: {notes[0]}')
+                elif len(notes) > 1:
+                    notes_mod.append('NOTES:')
+                    for i, note in enumerate(notes):
+                        question += f'\n{i + 1}. {note}'
+                if notes_mod:
+                    self._display_blocks += [DisplayBlock(ColorMode.REGULAR,
+                                                          note)
+                                             for note in notes_mod]
+                self._display_blocks += [
                     EmptyDisplayBlock(),
-                    InputAnswerDisplayBlock()
+                    InputAnswerDisplayBlock(),
                 ]
                 self._interface_state = InterfaceState.ANSWER_INPUT
             elif self._interface_state == InterfaceState.ANSWER_INPUT:
