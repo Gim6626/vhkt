@@ -212,7 +212,7 @@ class CursesTuiTutor(BasicTutor):
                     key = chr(k)
                     if k == 263:
                         # KEY_BACKSPACE
-                        if len(input_answer_display_block.input_key_combinations) > 1:
+                        if len(input_answer_display_block.input_key_combinations) > 0:
                             del input_answer_display_block.input_key_combinations[-1]
                         key_modified = None
                     elif k == 8:
