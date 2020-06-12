@@ -172,7 +172,6 @@ class CursesTuiTutor(BasicTutor):
 
     def _tutor_internal(self):
         # TODO: Think about implementing more universal basic tutor
-        # TODO: Handle too little screen
         self._prepare()
         k = 0
         while True:
