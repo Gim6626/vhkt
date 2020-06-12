@@ -69,7 +69,7 @@ def init_args():
     parser.add_argument('-m',
                         '--mode',
                         choices=[m.value for m in vhkt.basic.Mode],
-                        default=vhkt.basic.Mode.CURSES_TEXT,
+                        default=vhkt.basic.Mode.CURSES_TUI,
                         help='Interface mode')
     global args
     args = parser.parse_args()
