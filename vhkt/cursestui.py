@@ -241,6 +241,10 @@ class CursesTuiTutor(BasicTutor):
                     input_answer_display_block: InputAnswerDisplayBlock = self._display_blocks[-1]
                     if len(input_answer_display_block.input_key_combinations) > 1 \
                                 and input_answer_display_block.input_key_combinations in self.hk_storage.action_hotkeys_by_key(self._action_key) \
+                                and ':' not in input_answer_display_block.input_key_combinations \
+                            or len(input_answer_display_block.input_key_combinations) > 1 \
+                                and ':' in input_answer_display_block.input_key_combinations \
+                                and ''.join(input_answer_display_block.input_key_combinations) in self.hk_storage.action_hotkeys_by_key(self._action_key) \
                             or len(input_answer_display_block.input_key_combinations) == 1 \
                                 and input_answer_display_block.input_key_combinations[0] in self.hk_storage.action_hotkeys_by_key(self._action_key):
                         self._interface_state = InterfaceState.CORRECT_ANSWER
