@@ -148,18 +148,23 @@ class BasicTutor(ABC):
     def before_success(self):
         pass
 
+    @property
+    def success_string(self):
+        return 'All hotkeys are learned, nothing to do'
+
     def tutor(self):
         self.show_learning_stats()
         all_success = self.learning_results_storage.all_actions_learned_successfully
-        success_str = 'All hotkeys are learned, nothing to do'
         if all_success:
+            # TODO: Refactor, duplicate code
             self.before_success()
-            self.print(success_str)
+            self.print(self.success_string)
             self.on_exit()
             return
         while True:
             self.before_question()
-            action_key, question = self.prepare_question()
+            action_key, question = self.prepare_question_with_notes_in_place()
+            question += '\n> '
             answer_type, answer_blocks = self.answer_for_question(question)
             if answer_type == self.AnswerType.HELP:
                 self.show_help_for_action(action_key)
@@ -174,7 +179,7 @@ class BasicTutor(ABC):
                     self.learning_results_storage.set_action_guess_wrong(action_key)
                     self.print('Wrong!')
                     while True:
-                        question = 'Want to see correct answer? [y/n]: '
+                        question = f'{self.question_for_correct_answer}: '
                         answer_type, answer_blocks = self.answer_for_question(question)
                         if answer_type == self.AnswerType.REGULAR_ANSWER:
                             if answer_blocks == ['y']:
@@ -194,12 +199,13 @@ class BasicTutor(ABC):
             self.learning_results_storage.save()
             all_success = self.learning_results_storage.all_actions_learned_successfully
             if all_success:
+                # TODO: Refactor, duplicate code
                 self.before_success()
-                self.print(success_str)
+                self.print(self.success_string)
                 self.on_exit()
                 return
 
-    def show_help_for_action(self, action_key):
+    def help_for_action(self, action_key):
         helps = []
         for hotkey in self.hk_storage.action_hotkeys_by_key(action_key):
             if isinstance(hotkey, list):
@@ -209,7 +215,14 @@ class BasicTutor(ABC):
             else:
                 raise NotImplementedError
         hotkeys_str = ' or '.join(helps)
-        self.print(f'\nKey combination(s) for "{self.hk_storage.action_description_by_key(action_key)}": {hotkeys_str}')
+        return f'Key combination(s) for "{self.hk_storage.action_description_by_key(action_key)}": {hotkeys_str}'
+
+    def show_help_for_action(self, action_key):
+        self.print('\n' + self.help_for_action())
+
+    @property
+    def question_for_correct_answer(self):
+        return 'Want to see correct answer? [y/n]'
 
     @abstractmethod
     def print(self, msg):
@@ -222,7 +235,7 @@ class BasicTutor(ABC):
         while True:
             random_action_key = self.learning_results_storage.random_nonlearned_action_key
             if random_action_key is None:
-                raise Exception('random_action_key is None')
+                raise Exception('Unexpected error, random_action_key is None')
             try:
                 key_combination_type = self.hk_storage.key_combination_type_by_key(random_action_key)
                 break
@@ -240,14 +253,17 @@ class BasicTutor(ABC):
         notes = self.notes_for_asked_action(random_action_key)
         question \
             = f'What is {key_combination_type_str} for "{self.hk_storage.action_description_by_key(random_action_key)}"?'.upper()
+        return random_action_key, question, notes
+
+    def prepare_question_with_notes_in_place(self):
+        action_key, question, notes = self.prepare_question()
         if len(notes) == 1:
             question += f'\nNOTE: {notes[0]}'
         elif len(notes) > 1:
             question += '\nNOTES:'
             for i, note in enumerate(notes):
                 question += f'\n{i + 1}. {note}'
-        question += '\n> '
-        return random_action_key, question
+        return action_key, question
 
     @abstractmethod
     def answer_for_question(self, question):
@@ -263,7 +279,8 @@ class BasicTutor(ABC):
     def after_answer(self):
         pass
 
-    def show_learning_stats(self):
+    @property
+    def learning_stats(self):
         stats_lines = [
             f'{self.learning_results_storage.actions_learned_count} action(s) learned',
             f'{self.learning_results_storage.actions_learning_in_process_count} in process',
@@ -272,4 +289,7 @@ class BasicTutor(ABC):
             f'{self.learning_results_storage.actions_to_learn_count} action(s) left to learn',
             f'{self.learning_results_storage.actions_count} action(s) total to learn',
         ]
-        self.print(', '.join(stats_lines))
+        return stats_lines
+
+    def show_learning_stats(self):
+        self.print(', '.join(self.learning_stats))

@@ -66,6 +66,7 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
             if key not in self.actions_keys:
                 self._data['actions'][key] = {}
         self._prev_action_key = None
+        self.hk_storage: BasicHotKeysStorage = hk_storage
 
     def remove_results_for_action(self, action_key):
         del self._data['actions'][action_key]
@@ -146,6 +147,8 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
             all_success = False
         else:
             for action_key, action_value in self._data['actions'].items():
+                if action_key not in self.hk_storage.actions_keys:
+                    continue
                 if 'success' in self._data['actions'][action_key] \
                         and not self._data['actions'][action_key]['success'] \
                         or action_key not in self._data['actions'] \
