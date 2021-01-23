@@ -205,6 +205,8 @@ class CursesTuiTutor(BasicTutor):
                 self._display_blocks = [
                     DisplayBlock(ColorMode.QUESTION,
                                  question),
+                    DisplayBlock(ColorMode.REGULAR,
+                                 'Input hotkey or command and press ENTER'),
                 ]
                 notes_mod = []
                 if len(notes) == 1:
