@@ -33,12 +33,15 @@ create template for learning results file with default name
 `lrnres.yaml`, fill it with actions keys from `hkdb.yaml` and start
 it's work.
 
-You should see something like this:
+You should see something like this (in `simple-text` mode, `curses-tui`
+slightly differs):
 
-    Learning results file path not passed, using default "lrnres.yaml"
-    0 actions learned, 43 left
-    What is hotkey for "Go left"?
-    Type keys combination or "\h" for help or "\q" to quit:
+    <517275> [2021-01-23 11:34:19,085] INFO: Hot keys storage file path not passed, using default "hkdb.yaml"
+    <517275> [2021-01-23 11:34:19,114] INFO: Learning results file path not passed, using default "lrnres.yaml"
+    0 action(s) learned, 11 in process, 12 guess(es), 1 error guess(es), 51 action(s) left to learn, 51 action(s) total to learn
+    WHAT IS HOTKEY FOR "PASTE AFTER"?
+    NOTE: Type keys combination or "\h" for help or "\e" to exit and press ENTER
+    >
 
 To learn hotkey or command you should correctly type it three times.
 Mistake? Minus one, try more.
