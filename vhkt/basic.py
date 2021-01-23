@@ -218,7 +218,7 @@ class BasicTutor(ABC):
         return f'Key combination(s) for "{self.hk_storage.action_description_by_key(action_key)}": {hotkeys_str}'
 
     def show_help_for_action(self, action_key):
-        self.print('\n' + self.help_for_action())
+        self.print('\n' + self.help_for_action(action_key))
 
     @property
     def question_for_correct_answer(self):
