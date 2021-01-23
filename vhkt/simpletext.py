@@ -42,7 +42,7 @@ class SimpleTextTutor(BasicTutor):
                 if 'Ctrl' in correct_answer and not ctrl_found:
                     notes.append(ctrl_note)
                     ctrl_found = True
-        notes.append('Type keys combination or "\\h" for help or "\\e" to exit')
+        notes.append('Type keys combination or "\\h" for help or "\\e" to exit and press ENTER')
         return notes
 
     def after_answer(self):
