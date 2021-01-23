@@ -10,6 +10,14 @@ learn basic Vim hot keys and commands.
 VHKT is licensed under GPL v3 or later, full license text you
 can find in `LICENSE` file in repository root. 
 
+## Requirements
+
+To install requirements execute following commands from repository root:
+
+    pip3 install -r requirements
+
+Or do similar from virtualenv (if you know what it is).
+
 ## Basic Usage
 
 Basic hot keys and commands are included to `hkdb.yaml` in repo,
