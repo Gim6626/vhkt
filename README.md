@@ -51,8 +51,8 @@ Now you could start learning, good luck!
 own using same syntax and pass it to VHKT as first command line
 argument.
 1. Also you can use several different learning results files,
-just pass desired path to VHKT as second (optional) command line
-argument and enjoy.
+just pass desired path to VHKT as `-l/--learning-results-file` command
+line argument and enjoy.
 1. VHKT was create with intention to extend it, so if you look
 at `vhkt/core.py` you will see both `Basic...` and `File...` classes.
 If needed source code could be extended to work with database for
