@@ -18,7 +18,7 @@ feel free to use it or create your own using same syntax.
 Simplest way to call VHKT is to type command from repository
 directory:
 
-    python3 vhkt.py hkdb.yaml
+    python3 vhkt.py
 
 In this case VHKT will load `hkdb.yaml` from repository directory,
 create template for learning results file with default name
