@@ -89,6 +89,6 @@ if __name__ == '__main__':
     logging_level = logging.DEBUG if args.debug else logging.INFO
     logger = init_custom_logger(logging_level)
     if args.mode == vhkt.basic.Mode.SIMPLE_TEXT:
-        sys.exit(main())
+        main()
     else:
         curses.wrapper(main)
