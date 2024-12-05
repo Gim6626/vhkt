@@ -7,6 +7,10 @@ import argparse
 import curses
 
 import vhkt.basic
+import vhkt.cursestext
+import vhkt.cursestui
+import vhkt.filestorage
+import vhkt.simpletext
 
 logger: logging.Logger = None
 args = None
