@@ -1,5 +1,7 @@
 # VHKT
 
+![](img/logo256.png)
+
 ## Intro
 
 Vim hot keys tutor (VHKT) is (currently) console only tool to help
