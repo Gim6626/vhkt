@@ -4,39 +4,34 @@
 
 ## Intro
 
-Vim hot keys tutor (VHKT) is (currently) console only tool to help
-learn basic Vim hot keys and commands.
-
-## Licensing
-
-VHKT is licensed under GPL v3 or later, full license text you
-can find in `LICENSE` file in repository root. 
+Vim Hotkeys Tutor (VHKT) is a console tool designed to assist in learning
+basic Vim hotkeys and commands.
 
 ## Requirements
 
-To install requirements execute following commands from repository root:
+To install the required packages, execute the following command from the root
+of the repository
 
-    pip3 install -r requirements
+    $ pip3 install -r requirements.txt
 
-Or do similar from virtualenv (if you know what it is).
+or do something similar from within a virtual environment.
 
 ## Basic Usage
 
-Basic hot keys and commands are included to `hkdb.yaml` in repo,
-feel free to use it or create your own using same syntax.
+Basic hotkeys and commands are included in the hkdb.yaml file in the
+repository. Feel free to use it or create your own using the same syntax.
 
-Simplest way to call VHKT is to type command from repository
+The simplest way to call VHKT is to type the command from the repository
 directory:
 
-    python3 vhkt.py
+    $ python3 vhkt.py
 
-In this case VHKT will load `hkdb.yaml` from repository directory,
-create template for learning results file with default name
-`lrnres.yaml`, fill it with actions keys from `hkdb.yaml` and start
-it's work.
+In this case, VHKT will load `hkdb.yaml` from the repository directory, create
+a template for the learning results file with the default name `lrnres.yaml`,
+populate it with action keys from `hkdb.yaml`, and start its work.
 
-You should see something like this (in `simple-text` mode, `curses-tui`
-slightly differs):
+You should see something like this (in `simple-text` mode; `curses-tui` is
+slightly different):
 
     <517275> [2021-01-23 11:34:19,085] INFO: Hot keys storage file path not passed, using default "hkdb.yaml"
     <517275> [2021-01-23 11:34:19,114] INFO: Learning results file path not passed, using default "lrnres.yaml"
@@ -45,30 +40,20 @@ slightly differs):
     NOTE: Type keys combination or "\h" for help or "\e" to exit and press ENTER
     >
 
-To learn hotkey or command you should correctly type it three times.
-Mistake? Minus one, try more.
+To learn a hotkey or command, you need to type it correctly three times.
+Made a mistake? That's minus one, try again.
 
-Now you could start learning, good luck!
+Now you can start learning. Good luck!
+
 
 ## Advanced Usage
 
-1. In addition to default hot keys database you could create your
-own using same syntax and pass it to VHKT as first command line
-argument.
-1. Also you can use several different learning results files,
-just pass desired path to VHKT as `-l/--learning-results-file` command
-line argument and enjoy.
-1. VHKT was create with intention to extend it, so if you look
-at `vhkt/core.py` you will see both `Basic...` and `File...` classes.
-If needed source code could be extended to work with database for
-example or to support several users.
-
-## Contacts
-
-Feel free to submit bug reports or suggest feature requests to
-VHKT main repo https://github.com/Gim6626/vhkt or directly to
-me at email gim6626@gmail.com.
-
----
-
-Dmitriy Vinokurov, 2020
+1. In addition to the default hotkeys database, you can create your own using
+   the same syntax and pass it to VHKT as the first command-line argument.
+2. You can also use several different learning results files. Just pass the
+   desired path to VHKT as the `-l/--learning-results-file` command-line
+   argument and enjoy.
+3. VHKT was created with the intention of being extendable. If you look at
+   `vhkt/core.py`, you will see both `Basic...` and `File...` classes. If
+   needed, the source code can be extended to work with a database, for
+   example, or to support multiple users.
