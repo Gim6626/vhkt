@@ -124,6 +124,7 @@ class BasicLearningResultsStorage(ABC):
     def random_nonlearned_action_key(self):
         pass
 
+    @abstractmethod
     def save(self):
         pass
 
