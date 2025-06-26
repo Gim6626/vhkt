@@ -20,6 +20,9 @@ class FileHotKeysStorage(BasicHotKeysStorage):
         with open(hkdb_file_path, 'r') as config_file:
             raw_data = config_file.read()
             self._data = yaml.safe_load(raw_data)
+            for action_key in self._data['actions'].keys():
+                if 'type' not in self._data['actions'][action_key]:
+                    self._data['actions'][action_key]['type'] = 'hotkey'
 
     @property
     def actions_keys(self):

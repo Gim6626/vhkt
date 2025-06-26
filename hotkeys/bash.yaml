@@ -1,0 +1,65 @@
+app: Bash
+source: https://gist.github.com/tuxfight3r/60051ac67c5f0445efee
+actions:
+  to_line_beginning:
+    description: 'Goto beginning of command line'
+    hotkeys:
+      - 'Ctrl+a'
+  to_line_end:
+    description: 'Goto end of command line'
+    hotkeys:
+      - 'Ctrl+e'
+  forward_one_word:
+    description: 'Move cursor forward one word'
+    hotkeys:
+      - 'Alt+f'
+      - 'Ctrl+Right'
+  backward_one_word:
+    description: 'Move cursor backward one word'
+    hotkeys:
+      - 'Alt+b'
+      - 'Ctrl+Left'
+  clear_before_cursor:
+    description: 'Clear all before cursor'
+    hotkeys:
+      - 'Ctrl+u'
+  clear_after_cursor:
+    description: 'Clear all after cursor'
+    hotkeys:
+      - 'Ctrl+k'
+  delete_word_before_cursor:
+    description: 'Delete the word before the cursor (until first space)'
+    hotkeys:
+      - 'Ctrl+w'
+  delete_word_before_cursor_2:
+    description: 'Delete the word before the cursor (until first non alphanumeric)'
+    hotkeys:
+      - 'Alt+Backspace'
+  delete_word_from_cursor:
+    description: 'Delete the word from the cursor (until first non alphanumeric)'
+    hotkeys:
+      - 'Alt+d'
+  clear_screen:
+    description: 'Clear the screen (same as `clear` command)'
+    hotkeys:
+      - 'Ctrl+l'
+  sigint_running:
+    description: 'Sent SIGINT to foreground process'
+    hotkeys:
+      - 'Ctrl+c'
+  exit:
+    description: 'Exit shell (same as `exit` command)'
+    hotkeys:
+      - 'Ctrl+d'
+  background_process:
+    description: 'Place current process in background'
+    hotkeys:
+      - 'Ctrl+z'
+  search_backward:
+    description: 'Search backward starting at the current line and moving "up" through the history'
+    hotkeys:
+      - 'Ctrl+r'
+  autocomplete:
+    description: 'Auto complete command'
+    hotkeys:
+      - 'Tab'
