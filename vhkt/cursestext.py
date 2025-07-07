@@ -13,6 +13,12 @@ class CursesTextTutor(BasicTutor):
         super().__init__(hk_storage, learning_results_storage)
         self.window = window
 
+    def show_welcome_message(self):
+        self.print(self.WELCOME_STRING)
+        self.print(self.selected_application_string)
+        self.print('Press any key to continue')
+        self.window.getkey()
+
     def show_help_for_action(self, action_key):
         super().show_help_for_action(action_key)
 

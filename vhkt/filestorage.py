@@ -1,5 +1,6 @@
 # Copyleft GPLv3 or later
 # 2020 Dmitriy Vinokurov gim6626@gmail.com
+import re
 
 import yaml
 import os
@@ -28,6 +29,10 @@ class FileHotKeysStorage(BasicHotKeysStorage):
     def actions_keys(self):
         return list(self._data['actions'].keys())
 
+    @property
+    def app_name(self):
+        return self._data['app']
+
     def action_description_by_key(self, key):
         return self._data['actions'][key]['description']
 
@@ -40,11 +45,18 @@ class FileHotKeysStorage(BasicHotKeysStorage):
             if isinstance(hotkey, list):
                 hotkeys_mod.append(hotkey)
             elif isinstance(hotkey, str):
-                if len(hotkey) == 1:
-                    hotkeys_mod.append(hotkey)
-                elif ':' in hotkey:
-                    hotkeys_mod.append(hotkey)
-                elif 'Ctrl' in hotkey:
+                if (len(hotkey) == 1
+                        or ':' in hotkey
+                        or 'Ctrl' in hotkey
+                        or 'Shift' in hotkey
+                        or 'Alt' in hotkey
+                        or 'Space' in hotkey
+                        or 'Home' in hotkey
+                        or 'End' in hotkey
+                        or 'Esc' in hotkey
+                        or 'PgUp' in hotkey
+                        or 'PgDn' in hotkey
+                        or re.search(r'F\d+', hotkey)):
                     hotkeys_mod.append(hotkey)
                 else:
                     hotkeys_mod.append(list(hotkey))

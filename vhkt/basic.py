@@ -18,6 +18,11 @@ class BasicHotKeysStorage(ABC):
     def actions_keys(self):
         pass
 
+    @property
+    @abstractmethod
+    def app_name(self):
+        pass
+
     @abstractmethod
     def action_description_by_key(self, key):
         pass
@@ -131,6 +136,8 @@ class BasicLearningResultsStorage(ABC):
 
 class BasicTutor(ABC):
 
+    WELCOME_STRING = 'Welcome to VHKT Hot Keys Tutor!'
+
     class AnswerType(Enum):
         HELP = 'help'
         EXIT = 'exit'
@@ -143,6 +150,10 @@ class BasicTutor(ABC):
             = learning_results_storage
         self.random_action_key = None
 
+    @property
+    def selected_application_string(self):
+        return f'Selected application to learn hotkeys for: {self.hk_storage.app_name}'
+
     def before_question(self):
         pass
 
@@ -153,7 +164,12 @@ class BasicTutor(ABC):
     def success_string(self):
         return 'All hotkeys are learned, nothing to do'
 
+    @abstractmethod
+    def show_welcome_message(self):
+        pass
+
     def tutor(self):
+        self.show_welcome_message()
         self.show_learning_stats()
         all_success = self.learning_results_storage.all_actions_learned_successfully
         if all_success:

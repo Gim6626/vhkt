@@ -23,6 +23,10 @@ class SimpleTextTutor(BasicTutor):
             answer_type = self.AnswerType.REGULAR_ANSWER
         return answer_type, answer.split(',')
 
+    def show_welcome_message(self):
+        self.print(self.WELCOME_STRING)
+        self.print(self.selected_application_string)
+
     def notes_for_asked_action(self, action_key):
         notes = super().notes_for_asked_action(action_key)
         correct_answers = self.hk_storage.action_hotkeys_by_key(action_key)

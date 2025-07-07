@@ -116,6 +116,15 @@ class CursesTuiTutor(BasicTutor):
         self._action_key = None
         self._next_interface_state: InterfaceState = None  # Used only to choose next step for PENDING_ENTER_TO_PROCEED_TO_NEXT_STEP
 
+    def show_welcome_message(self):
+        self._display_blocks = (
+            DisplayBlock(ColorMode.REGULAR, self.WELCOME_STRING),
+            DisplayBlock(ColorMode.REGULAR, self.selected_application_string),
+            DisplayBlock(ColorMode.REGULAR, 'Press any key to continue'),
+        )
+        self._render_display_blocks()
+        self.window.getch()
+
     @property
     def _statusbar_str(self):
         s = f'Press "Ctrl+e" to exit or "Ctrl+h" for help'
@@ -176,6 +185,7 @@ class CursesTuiTutor(BasicTutor):
         # TODO: Think about implementing more universal basic tutor
         self._prepare()
         k = 0
+        self.show_welcome_message()
         while True:
             self.window.clear()
             self._render_statistics()
