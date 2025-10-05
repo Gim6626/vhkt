@@ -155,6 +155,9 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
             if not correctness:
                 self._data['actions'][action_key][error_guesses_key] += 1
 
+    def skip_action(self, action_key):
+        self._data['actions'][action_key]['skip'] = True
+
     @property
     def all_actions_learned_successfully(self) -> bool:
         all_success = True
@@ -163,6 +166,8 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
         else:
             for action_key, action_value in self._data['actions'].items():
                 if action_key not in self.hk_storage.actions_keys:
+                    continue
+                if self._data['actions'][action_key].get('skip'):
                     continue
                 if 'success' in self._data['actions'][action_key] \
                         and not self._data['actions'][action_key]['success'] \
@@ -180,6 +185,8 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
                 return None
             random_action_key_index = random.randint(0, len(self.actions_keys) - 1)
             random_action_key = self.actions_keys[random_action_key_index]
+            if self._data['actions'][random_action_key].get('skip'):
+                continue
             if random_action_key in self.actions_keys \
                     and self.action_success(random_action_key):
                 continue

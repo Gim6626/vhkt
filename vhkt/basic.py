@@ -124,6 +124,10 @@ class BasicLearningResultsStorage(ABC):
     def set_action_guess_wrong(self, action_key):
         self.set_action_guess_correctness(action_key, False)
 
+    @abstractmethod
+    def skip_action(self, action_key):
+        pass
+
     @property
     @abstractmethod
     def random_nonlearned_action_key(self):
