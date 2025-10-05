@@ -1,0 +1,278 @@
+app: Chrome
+source: https://support.google.com/chrome/answer/157179
+actions:
+  new_window:
+    description: 'Open a new window'
+    hotkeys:
+      - 'Ctrl+n'
+  new_incognito_window:
+    description: 'Open a new window in incognito mode'
+    hotkeys:
+      - 'Ctrl+Shift+n'
+  new_tab:
+    description: 'Open a new tab, and jump to it'
+    hotkeys:
+      - 'Ctrl+t'
+  reopen_tab:
+    description: 'Reopen previously closed tabs in the order they were closed'
+    hotkeys:
+      - 'Ctrl+Shift+t'
+  next_tab:
+    description: 'Jump to the next open tab'
+    hotkeys:
+      - 'Ctrl+Tab'
+      - 'Ctrl+PgDn'
+  previous_tab:
+    description: 'Jump to the previous open tab'
+    hotkeys:
+      - 'Ctrl+Shift+Tab'
+      - 'Ctrl+PgUp'
+  to_tab:
+    description: 'Jump to a specific tab (e.g. #1)'
+    hotkeys:
+      - 'Ctrl+1'
+  to_last_tab:
+    description: 'Jump to the rightmost tab'
+    hotkeys:
+      - 'Ctrl+9'
+  open_home:
+    description: 'Open your home page in the current tab'
+    hotkeys:
+      - 'Alt+Home'
+  history_back:
+    description: 'Open the previous page from your browsing history in the current tab'
+    hotkeys:
+      - 'Alt+Left'
+  history_next:
+    description: 'Open the next page from your browsing history in the current tab'
+    hotkeys:
+      - 'Alt+Right'
+  close_tab:
+    description: 'Close the current tab'
+    hotkeys:
+      - 'Ctrl+w'
+      - 'Ctrl+F4'
+  close_window:
+    description: 'Close the current window'
+    hotkeys:
+      - 'Ctrl+Shift+w'
+      - 'Alt+F4'
+  minimize:
+    description: 'Minimize the current window'
+    hotkeys:
+      - 'Alt+Space,n'
+  maximize:
+    description: 'Maximize the current window'
+    hotkeys:
+      - 'Alt+Space,x'
+  quit:
+    description: 'Quit Google Chrome'
+    hotkeys:
+      - 'Alt+f,x'
+  move_tab_left:
+    description: 'Move tabs left'
+    hotkeys:
+      - 'Ctrl+Shift+PgUp'
+  move_tab_right:
+    description: 'Move tabs right'
+    hotkeys:
+      - 'Ctrl+Shift+PgDn'
+  fullscreen_on:
+    description: 'Turn on full-screen mode'
+    hotkeys:
+      - 'F11'
+  fullscreen_off:
+    description: 'Turn off full-screen mode'
+    hotkeys:
+      - 'F11'
+      - 'Esc'
+  open_menu:
+    description: 'Open the Chrome menu'
+    hotkeys:
+      - 'Alt+f'
+      - 'Alt+e'
+  show_or_hide_bookmarks:
+    description: 'Show or hide the Bookmarks bar'
+    hotkeys:
+      - 'Ctrl+Shift+b'
+  open_bookmarks_manager:
+    description: 'Open the Bookmarks Manager'
+    hotkeys:
+      - 'Ctrl+Shift+o'
+  open_history:
+    description: 'Open the History page in a new tab'
+    hotkeys:
+      - 'Ctrl+h'
+  open_downloads:
+    description: 'Open the Downloads page in a new tab'
+    hotkeys:
+      - 'Ctrl+j'
+  open_task_manager:
+    description: 'Open the Chrome Task Manager'
+    hotkeys:
+      - 'Shift+Esc'
+  set_focus_first:
+    description: 'Set focus on the first item in the Chrome toolbar'
+    hotkeys:
+      - 'Shift+Alt+t'
+  set_focus_last:
+    description: 'Set focus on the rightmost item in the Chrome toolbar'
+    hotkeys:
+      - 'F10'
+  switch_focus_to_unfocused:
+    description: 'Switch focus to unfocused dialog (if showing) and all toolbars'
+    hotkeys:
+      - 'F6'
+  find_on_page:
+    description: 'Open the Find Bar to search the current page'
+    hotkeys:
+      - 'Ctrl+f'
+      - 'F3'
+  next_match:
+    description: 'Jump to the next match to your Find Bar search'
+    hotkeys:
+      - 'Ctrl+g'
+  previous_match:
+    description: 'Jump to the previous match to your Find Bar search'
+    hotkeys:
+      - 'Ctrl+Shift+g'
+  open_dev_tools:
+    description: 'Open Developer Tools'
+    hotkeys:
+      - 'Ctrl+Shift+j'
+      - 'F12'
+  open_delete_browsing_data:
+    description: 'Open the Delete Browsing Data options'
+    hotkeys:
+      - 'Ctrl+Shift+Delete'
+  open_help:
+    description: 'Open the Chrome Help Center in a new tab'
+    hotkeys:
+      - 'F1'
+  relogin_or_guest:
+    description: 'Log in a different user or browse as a Guest'
+    hotkeys:
+      - 'Ctrl+Shift+m'
+  open_feedback_form:
+    description: 'Open a feedback form'
+    hotkeys:
+      - 'Alt+Shift+i'
+  caret_browsing:
+    description: 'Turn on caret browsing'
+    hotkeys:
+      - 'F7'
+  skip_to_contents:
+    description: 'Skip to web contents'
+    hotkeys:
+      - 'Ctrl+F6'
+  focus_on_inactive:
+    description: 'Focus on inactive dialogs'
+    hotkeys:
+      - 'Alt+Shift+a'
+  jump_to_address:
+    description: 'Jump to the address bar'
+    hotkeys:
+      - 'Ctrl+l'
+      - 'Alt+d'
+      - 'F6'
+  search_from_anywhere:
+    description: 'Search from anywhere on the page'
+    hotkeys:
+      - 'Ctrl+k'
+      - 'Ctrl+e'
+  remove_prediction:
+    description: 'Remove predictions from your address bar'
+    hotkeys:
+      - 'Shift+Delete'
+  print:
+    description: 'Open options to print the current page'
+    hotkeys:
+      - 'Ctrl+p'
+  save:
+    description: 'Open options to save the current page'
+    hotkeys:
+      - 'Ctrl+s'
+  reload:
+    description: 'Reload the current page'
+    hotkeys:
+      - 'F5'
+      - 'Ctrl+r'
+  force_reload:
+    description: 'Reload the current page, ignoring cached content'
+    hotkeys:
+      - 'Shift+F5'
+      - 'Ctrl+Shift+r'
+  stop_loading:
+    description: 'Stop the page loading'
+    hotkeys:
+      - 'Esc'
+  clickable_forward:
+    description: 'Browse clickable items moving forward'
+    hotkeys:
+      - 'Tab'
+  clickable_backward:
+    description: 'Browse clickable items moving backward'
+    hotkeys:
+      - 'Shift+Tab'
+  open:
+    description: 'Open a file from your computer in Chrome'
+    hotkeys:
+      - 'Ctrl+o'
+  source:
+    description: 'Display non-editable HTML source code for the current page'
+    hotkeys:
+      - 'Ctrl+u'
+  bookmark:
+    description: 'Save your current webpage as a bookmark'
+    hotkeys:
+      - 'Ctrl+d'
+  bookmark_all:
+    description: 'Save all open tabs as bookmarks in a new folder'
+    hotkeys:
+      - 'Ctrl+Shift+d'
+  make_bigger:
+    description: 'Make everything on the page bigger'
+    hotkeys:
+      - 'Ctrl and +'
+  make_smaller:
+    description: 'Make everything on the page smaller'
+    hotkeys:
+      - 'Ctrl and -'
+  reset_size:
+    description: 'Return everything on the page to default size'
+    hotkeys:
+      - 'Ctrl+0'
+  page_down:
+    description: 'Scroll down a webpage, a screen at a time'
+    hotkeys:
+      - 'Space'
+      - 'PgDn'
+  page_up:
+    description: 'Scroll up a webpage, a screen at a time'
+    hotkeys:
+      - 'Shift+Space'
+      - 'PgUp'
+  to_top:
+    description: 'Go to the top of the page'
+    hotkeys:
+      - 'Home'
+  to_bottom:
+    description: 'Go to the bottom of the page'
+    hotkeys:
+      - 'End'
+  scroll_horizontally:
+    description: 'Scroll horizontally on the page'
+    hotkeys:
+      - 'Shift+Scroll your mousewheel'
+  move_cursor_left_by_word:
+    description: 'Move your cursor to the beginning of the previous word in a text field'
+    hotkeys:
+      - 'Ctrl+Left'
+  move_cursor_right_by_word:
+    description: 'Move your cursor to the next word'
+    hotkeys:
+      - 'Ctrl+Right'
+  delete_previous_word:
+    description: 'Delete the previous word in a text field'
+    hotkeys:
+      - 'Ctrl+Backspace'

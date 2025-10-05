@@ -1,3 +1,4 @@
+app: Vim
 actions:
   visual:
     description: 'Visual/selection'

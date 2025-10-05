@@ -5,6 +5,7 @@ import logging
 import sys
 import argparse
 import curses
+from pathlib import Path
 
 import vhkt.basic
 import vhkt.cursestext
@@ -14,8 +15,6 @@ import vhkt.simpletext
 
 logger: logging.Logger = None
 args = None
-DEFAULT_LEARNING_RESULTS_FILE = 'lrnres.yaml'
-DEFAULT_HOT_KEYS_STORAGE_FILE = 'hkdb.yaml'
 
 
 def main(window=None):
@@ -33,19 +32,15 @@ def main(window=None):
 
 
 def init_storages():
-    if args.HOT_KEYS_STORAGE_FILE:
-        hk_storage_file_path = args.HOT_KEYS_STORAGE_FILE
-    else:
-        logger.info(f'Hot keys storage file path not passed, using default "{DEFAULT_HOT_KEYS_STORAGE_FILE}"')
-        hk_storage_file_path = DEFAULT_HOT_KEYS_STORAGE_FILE
+    hk_storage_file_path = Path(args.APP_HOT_KEYS_STORAGE_FILE)
     hk_storage = vhkt.filestorage.FileHotKeysStorage(hk_storage_file_path)
     logger.debug('Hot keys storage loaded')
 
     if args.learning_results_file:
-        learning_results_file_path = args.learning_results_file
+        learning_results_file_path = Path(args.learning_results_file)
     else:
-        logger.info(f'Learning results file path not passed, using default "{DEFAULT_LEARNING_RESULTS_FILE}"')
-        learning_results_file_path = DEFAULT_LEARNING_RESULTS_FILE
+        learning_results_file_path = hk_storage_file_path.parent / f'.results-for-{hk_storage_file_path.stem}.yaml'
+        logger.info(f'Learning results file path not passed, using "{learning_results_file_path}"')
     learning_results_storage = vhkt.filestorage.FileLearningResultsStorage(learning_results_file_path, hk_storage)
     if not args.learning_results_file:
         learning_results_storage.save()
@@ -67,13 +62,13 @@ def init_custom_logger(logging_level):
 
 
 def init_args():
-    parser = argparse.ArgumentParser(description='Learn Vim hotkeys')
-    parser.add_argument('HOT_KEYS_STORAGE_FILE',
-                        help='Path to hot keys info storage file',
-                        nargs='?')
+    parser = argparse.ArgumentParser(description='Learn hotkeys for popular programs')
+    parser.add_argument('APP_HOT_KEYS_STORAGE_FILE',
+                        help='Path to application hot keys info storage file')
     parser.add_argument('-l',
                         '--learning-results-file',
-                        help='Path to learning results storage file')
+                        help='Path to learning results storage file',
+                        nargs='?')
     parser.add_argument('-d',
                         '--debug',
                         action='store_true',
