@@ -28,6 +28,7 @@ class InterfaceState(Enum):
     SHOWING_HELP = 'showing-help'
     ALL_SUCCESS = 'all-success'
     PENDING_ENTER_TO_PROCEED_TO_NEXT_STEP = 'pending-enter'
+    SKIP_ACTION = 'skip-action'
     QUIT = 'quit'
 
 
@@ -127,7 +128,7 @@ class CursesTuiTutor(BasicTutor):
 
     @property
     def _statusbar_str(self):
-        s = f'Press "Ctrl+e" to exit or "Ctrl+h" for help'
+        s = f'Press "Ctrl+e" to exit, "Ctrl+h" for help about hotkey for current action or "Ctrl+k" to skip this action and do not ask hotkeys for it'
         # TODO: Align debug message right
         if self._debug_msg is not None:
             s += ' | ' + self._debug_msg
@@ -180,6 +181,8 @@ class CursesTuiTutor(BasicTutor):
         except Exception as e:
             if str(e) == 'addwstr() returned ERR':
                 raise Exception('Curses error, possible too small screen. If not - sorry and contact developers please.')
+            else:
+                raise e
 
     def _tutor_internal(self):
         # TODO: Think about implementing more universal basic tutor
@@ -244,12 +247,17 @@ class CursesTuiTutor(BasicTutor):
                             del input_answer_display_block.input_key_combinations[-1]
                         key_modified = None
                     elif k == 8:
+                        # "Ctrl+h" pressed
                         self._interface_state = InterfaceState.SHOWING_HELP
                         continue
                     elif k == 10:
                         # ENTER, Ctrl+j
                         key_modified = None
                         self._interface_state = InterfaceState.CHECKING_ANSWER
+                        continue
+                    elif k == 11:
+                        # "Ctrl+k" pressed
+                        self._interface_state = InterfaceState.SKIP_ACTION
                         continue
                     elif key in string.ascii_lowercase \
                             or key in string.ascii_uppercase \
@@ -264,6 +272,17 @@ class CursesTuiTutor(BasicTutor):
                         input_answer_display_block.input_key_combinations.append(key_modified)
                 else:
                     ValueError(f'Invalid last display block type "{type(self._display_blocks[-1])}"')
+            elif self._interface_state == InterfaceState.SKIP_ACTION:
+                self._display_blocks = [
+                    DisplayBlock(ColorMode.SUCCESS,
+                                 f'Action "{self.hk_storage.action_description_by_key(self._action_key)}" skipped'),
+                    DisplayBlock(ColorMode.REGULAR,
+                                 'Press ENTER to continue')
+                ]
+                self.learning_results_storage.skip_action(self._action_key)
+                self.learning_results_storage.save()
+                self._interface_state = InterfaceState.PENDING_ENTER_TO_PROCEED_TO_NEXT_STEP
+                self._next_interface_state = InterfaceState.ASKING_QUESTION
             elif self._interface_state == InterfaceState.CHECKING_ANSWER:
                 if isinstance(self._display_blocks[-1], InputAnswerDisplayBlock):
                     input_answer_display_block: InputAnswerDisplayBlock = self._display_blocks[-1]
