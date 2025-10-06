@@ -77,7 +77,7 @@ def init_args():
                         '--mode',
                         choices=[m.value for m in vhkt.basic.Mode],
                         default=vhkt.basic.Mode.CURSES_TUI,
-                        help='Interface mode')
+                        help=f'Interface mode. Currently only "{vhkt.basic.Mode.CURSES_TUI.value}" is actively developed, others considered obsolete and planned for removal in future.')
     global args
     args = parser.parse_args()
     args.mode = vhkt.basic.Mode(args.mode)

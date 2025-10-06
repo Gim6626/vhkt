@@ -19,6 +19,11 @@ class CursesTextTutor(BasicTutor):
         self.print('Press any key to continue')
         self.window.getkey()
 
+    def show_obsolete_mode_warning(self):
+        self.print(self.OBSOLETE_MODE_WARNING)
+        self.print('Press any key to continue')
+        self.window.getkey()
+
     def show_help_for_action(self, action_key):
         super().show_help_for_action(action_key)
 

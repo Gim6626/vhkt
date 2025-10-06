@@ -27,6 +27,9 @@ class SimpleTextTutor(BasicTutor):
         self.print(self.WELCOME_STRING)
         self.print(self.selected_application_string)
 
+    def show_obsolete_mode_warning(self):
+        self.print(self.OBSOLETE_MODE_WARNING)
+
     def notes_for_asked_action(self, action_key):
         notes = super().notes_for_asked_action(action_key)
         correct_answers = self.hk_storage.action_hotkeys_by_key(action_key)
