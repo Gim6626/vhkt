@@ -126,6 +126,9 @@ class CursesTuiTutor(BasicTutor):
         self._render_display_blocks()
         self.window.getch()
 
+    def show_obsolete_mode_warning(self):
+        pass
+
     @property
     def _statusbar_str(self):
         s = f'Press "Ctrl+e" to exit, "Ctrl+h" for help about hotkey for current action or "Ctrl+k" to skip this action and do not ask hotkeys for it'
