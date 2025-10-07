@@ -5,10 +5,15 @@ from enum import Enum
 from abc import ABC, abstractmethod, abstractproperty
 
 
-class Mode(Enum):
+class InterfaceMode(Enum):
     SIMPLE_TEXT = 'simple-text'
     CURSES_TEXT = 'curses-text'
     CURSES_TUI = 'curses-tui'
+
+
+class AnswerMode(Enum):
+    SELECT = 'select'
+    INPUT = 'input'
 
 
 class BasicHotKeysStorage(ABC):
@@ -146,7 +151,7 @@ class BasicLearningResultsStorage(ABC):
 class BasicTutor(ABC):
 
     WELCOME_STRING = 'Welcome to VHKT Hot Keys Tutor!'
-    OBSOLETE_MODE_WARNING = f'WARNING! Obsolete and not supported interface mode is selected. Some features may not work as expected and even app crashes are possible. Recommended to switch to "{Mode.CURSES_TUI.value}".'
+    OBSOLETE_MODE_WARNING = f'WARNING! Obsolete and not supported interface mode is selected. Some features may not work as expected and even app crashes are possible. Recommended to switch to "{InterfaceMode.CURSES_TUI.value}".'
 
     class AnswerType(Enum):
         HELP = 'help'
@@ -179,12 +184,12 @@ class BasicTutor(ABC):
         pass
 
     @abstractmethod
-    def show_obsolete_mode_warning(self):
+    def show_obsolete_interface_mode_warning(self):
         pass
 
     def tutor(self):
         self.show_welcome_message()
-        self.show_obsolete_mode_warning()
+        self.show_obsolete_interface_mode_warning()
         self.show_learning_stats()
         all_success = self.learning_results_storage.all_actions_learned_successfully
         if all_success:

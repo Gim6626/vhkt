@@ -2,10 +2,12 @@
 # 2020 Dmitriy Vinokurov gim6626@gmail.com
 
 import curses
-from typing import List
+import random
+from typing import List, Collection
 from enum import Enum
 import string
 
+import vhkt.basic
 from vhkt.basic import BasicTutor
 
 
@@ -78,6 +80,19 @@ class InputAnswerDisplayBlock(DisplayBlock):
         raise NotImplementedError
 
 
+class SelectAnswerDisplayBlock(DisplayBlock):
+
+    def __init__(self, correct_answer, options: Collection[str]):
+        lines = []
+        for i, option in enumerate(options):
+            line = f'{i + 1}. {option}'
+            lines.append(line)
+        text = '\n'.join(lines)
+        self.correct_answer = correct_answer
+        self.options = options
+        super().__init__(ColorMode.REGULAR, text)
+
+
 class CursesTuiTutor(BasicTutor):
 
     COLOR_MODE_MAP = {
@@ -107,7 +122,9 @@ class CursesTuiTutor(BasicTutor):
         )
     }
 
-    def __init__(self, hk_storage, learning_results_storage, window):
+    OBSOLETE_ANSWER_MODE_WARNING = f'WARNING: "{vhkt.basic.AnswerMode.INPUT.value}" answer mode is deprecated, may not work properly and possibly will be removed in future versions. Please use "{vhkt.basic.AnswerMode.SELECT.value}" answer mode instead.'
+
+    def __init__(self, hk_storage, learning_results_storage, answer_mode, window):
         super().__init__(hk_storage, learning_results_storage)
         self.window = window
         self._input_string = ''
@@ -116,6 +133,7 @@ class CursesTuiTutor(BasicTutor):
         self._debug_msg = None
         self._action_key = None
         self._next_interface_state: InterfaceState = None  # Used only to choose next step for PENDING_ENTER_TO_PROCEED_TO_NEXT_STEP
+        self._answer_mode = answer_mode
 
     def show_welcome_message(self):
         self._display_blocks = (
@@ -126,8 +144,16 @@ class CursesTuiTutor(BasicTutor):
         self._render_display_blocks()
         self.window.getch()
 
-    def show_obsolete_mode_warning(self):
+    def show_obsolete_interface_mode_warning(self):
         pass
+
+    def show_obsolete_answer_mode_warning(self):
+        self._display_blocks = (
+            DisplayBlock(ColorMode.REGULAR, self.OBSOLETE_ANSWER_MODE_WARNING),
+            DisplayBlock(ColorMode.REGULAR, 'Press any key to continue'),
+        )
+        self._render_display_blocks()
+        self.window.getch()
 
     @property
     def _statusbar_str(self):
@@ -192,6 +218,9 @@ class CursesTuiTutor(BasicTutor):
         self._prepare()
         k = 0
         self.show_welcome_message()
+        if self._answer_mode == vhkt.basic.AnswerMode.INPUT:
+            self.window.clear()
+            self.show_obsolete_answer_mode_warning()
         while True:
             self.window.clear()
             self._render_statistics()
@@ -235,13 +264,27 @@ class CursesTuiTutor(BasicTutor):
                     self._display_blocks += [DisplayBlock(ColorMode.REGULAR,
                                                           note)
                                              for note in notes_mod]
-                self._display_blocks += [
-                    EmptyDisplayBlock(),
-                    InputAnswerDisplayBlock(),
-                ]
+                self._display_blocks += [EmptyDisplayBlock()]
+                if self._answer_mode == vhkt.basic.AnswerMode.SELECT:
+                    correct_answer = self.hk_storage.action_hotkeys_by_key(self._action_key)
+                    other_random_keys_count = min(len(self.hk_storage.actions_keys) - 1, 3)
+                    other_random_keys = random.sample(self.hk_storage.actions_keys, other_random_keys_count)
+                    other_answers = [self.hk_storage.action_hotkeys_by_key(action_key) for action_key in other_random_keys]
+                    answers = [correct_answer] + other_answers
+                    random.shuffle(answers)
+                    answer_block = SelectAnswerDisplayBlock(correct_answer, answers)
+                else:
+                    answer_block = InputAnswerDisplayBlock()
+                self._display_blocks += [answer_block]
                 self._interface_state = InterfaceState.ANSWER_INPUT
             elif self._interface_state == InterfaceState.ANSWER_INPUT:
-                if isinstance(self._display_blocks[-1], InputAnswerDisplayBlock):
+                if isinstance(self._display_blocks[-1], SelectAnswerDisplayBlock):
+                    input_answer_display_block: SelectAnswerDisplayBlock = self._display_blocks[-1]
+                    key = chr(k)
+                    if key in string.digits and 0 < int(key) <= len(input_answer_display_block.options):
+                        self._input_string = key
+                        self._interface_state = InterfaceState.CHECKING_ANSWER
+                elif isinstance(self._display_blocks[-1], InputAnswerDisplayBlock):
                     input_answer_display_block: InputAnswerDisplayBlock = self._display_blocks[-1]
                     key = chr(k)
                     if k == 263:
@@ -287,7 +330,16 @@ class CursesTuiTutor(BasicTutor):
                 self._interface_state = InterfaceState.PENDING_ENTER_TO_PROCEED_TO_NEXT_STEP
                 self._next_interface_state = InterfaceState.ASKING_QUESTION
             elif self._interface_state == InterfaceState.CHECKING_ANSWER:
-                if isinstance(self._display_blocks[-1], InputAnswerDisplayBlock):
+                if isinstance(self._display_blocks[-1], SelectAnswerDisplayBlock):
+                    input_answer_display_block: SelectAnswerDisplayBlock = self._display_blocks[-1]
+                    input_answer = int(self._input_string) - 1
+                    if input_answer_display_block.options[input_answer] == input_answer_display_block.correct_answer:
+                        self._interface_state = InterfaceState.CORRECT_ANSWER
+                    else:
+                        self._interface_state = InterfaceState.INCORRECT_ANSWER
+                    self._input_string = ''
+                    continue
+                elif isinstance(self._display_blocks[-1], InputAnswerDisplayBlock):
                     input_answer_display_block: InputAnswerDisplayBlock = self._display_blocks[-1]
                     if len(input_answer_display_block.input_key_combinations) > 1 \
                                 and input_answer_display_block.input_key_combinations in self.hk_storage.action_hotkeys_by_key(self._action_key) \

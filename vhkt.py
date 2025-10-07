@@ -20,14 +20,14 @@ args = None
 def main(window=None):
     hk_storage, learning_results_storage = init_storages()
     tutor: vhkt.basic.BasicTutor
-    if args.mode == vhkt.basic.Mode.SIMPLE_TEXT:
+    if args.interface_mode == vhkt.basic.InterfaceMode.SIMPLE_TEXT:
         tutor = vhkt.simpletext.SimpleTextTutor(hk_storage, learning_results_storage)
-    elif args.mode == vhkt.basic.Mode.CURSES_TEXT:
+    elif args.interface_mode == vhkt.basic.InterfaceMode.CURSES_TEXT:
         tutor = vhkt.cursestext.CursesTextTutor(hk_storage, learning_results_storage, window)
-    elif args.mode == vhkt.basic.Mode.CURSES_TUI:
-        tutor = vhkt.cursestui.CursesTuiTutor(hk_storage, learning_results_storage, window)
+    elif args.interface_mode == vhkt.basic.InterfaceMode.CURSES_TUI:
+        tutor = vhkt.cursestui.CursesTuiTutor(hk_storage, learning_results_storage, args.answer_mode, window)
     else:
-        raise NotImplementedError(f'Interface mode "{args.mode}" not supported yet')
+        raise NotImplementedError(f'Invalid interface mode "{args.interface_mode}"')
     tutor.tutor()
 
 
@@ -73,21 +73,27 @@ def init_args():
                         '--debug',
                         action='store_true',
                         help='Debug mode')
-    parser.add_argument('-m',
-                        '--mode',
-                        choices=[m.value for m in vhkt.basic.Mode],
-                        default=vhkt.basic.Mode.CURSES_TUI,
-                        help=f'Interface mode. Currently only "{vhkt.basic.Mode.CURSES_TUI.value}" is actively developed, others considered obsolete and planned for removal in future.')
+    parser.add_argument('-i',
+                        '--interface-mode',
+                        choices=[m.value for m in vhkt.basic.InterfaceMode],
+                        default=vhkt.basic.InterfaceMode.CURSES_TUI,
+                        help=f'Interface mode. Currently only "{vhkt.basic.InterfaceMode.CURSES_TUI.value}" is actively developed, others considered obsolete and planned for removal in future.')
+    parser.add_argument('-a',
+                        '--answer-mode',
+                        choices=[m.value for m in vhkt.basic.AnswerMode],
+                        default=vhkt.basic.AnswerMode.SELECT,
+                        help=f'Answer mode. Currently only "{vhkt.basic.AnswerMode.SELECT.value}", meaning select hot key from options, is supported. "{vhkt.basic.AnswerMode.INPUT}" mode, i.e. enter hot key directly, is not actively supported and may be considered deprecated and removed in future.')
     global args
     args = parser.parse_args()
-    args.mode = vhkt.basic.Mode(args.mode)
+    args.interface_mode = vhkt.basic.InterfaceMode(args.interface_mode)
+    args.answer_mode = vhkt.basic.AnswerMode(args.answer_mode)
 
 
 if __name__ == '__main__':
     init_args()
     logging_level = logging.DEBUG if args.debug else logging.INFO
     logger = init_custom_logger(logging_level)
-    if args.mode == vhkt.basic.Mode.SIMPLE_TEXT:
+    if args.interface_mode == vhkt.basic.InterfaceMode.SIMPLE_TEXT:
         main()
     else:
         curses.wrapper(main)
