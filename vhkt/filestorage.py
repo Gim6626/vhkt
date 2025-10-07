@@ -159,6 +159,14 @@ class FileLearningResultsStorage(BasicLearningResultsStorage):
         self._data['actions'][action_key]['skip'] = True
 
     @property
+    def skipped_actions_count(self):
+        return len([
+            action_key
+            for action_key in self._data['actions'].keys()
+            if self._data['actions'][action_key].get('skip')
+        ])
+
+    @property
     def all_actions_learned_successfully(self) -> bool:
         all_success = True
         if self._data['actions'] == {}:

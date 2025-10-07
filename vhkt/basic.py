@@ -103,7 +103,7 @@ class BasicLearningResultsStorage(ABC):
 
     @property
     def actions_to_learn_count(self) -> int:
-        return self.actions_count - self.actions_learned_count
+        return self.actions_count - self.actions_learned_count - self.skipped_actions_count
 
     @abstractmethod
     def set_action_learned_successfully(self, action_key):
@@ -126,6 +126,11 @@ class BasicLearningResultsStorage(ABC):
 
     @abstractmethod
     def skip_action(self, action_key):
+        pass
+
+    @property
+    @abstractmethod
+    def skipped_actions_count(self):
         pass
 
     @property
@@ -308,15 +313,16 @@ class BasicTutor(ABC):
 
     @property
     def learning_stats(self):
-        stats_lines = [
+        stats_items = [
             f'{self.learning_results_storage.actions_learned_count} action(s) learned',
             f'{self.learning_results_storage.actions_learning_in_process_count} in process',
             f'{self.learning_results_storage.actions_guesses_count} guess(es)',
-            f'{self.learning_results_storage.actions_error_guesses_count} error guess(es)',
+            f'{self.learning_results_storage.actions_error_guesses_count} erroneous guess(es)',
+            f'{self.learning_results_storage.skipped_actions_count} skipped action(s)',
             f'{self.learning_results_storage.actions_to_learn_count} action(s) left to learn',
-            f'{self.learning_results_storage.actions_count} action(s) total to learn',
+            f'{self.learning_results_storage.actions_count} action(s) in total',
         ]
-        return stats_lines
+        return stats_items
 
     def show_learning_stats(self):
         self.print(', '.join(self.learning_stats))
