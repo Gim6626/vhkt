@@ -3,7 +3,7 @@
 
 import curses
 import random
-from typing import List, Collection
+from typing import List, Sequence
 from enum import Enum
 import string
 
@@ -80,12 +80,13 @@ class InputAnswerDisplayBlock(DisplayBlock):
         raise NotImplementedError
 
 
-class SelectAnswerDisplayBlock(DisplayBlock):
+class AnswerOptionsDisplayBlock(DisplayBlock):
 
-    def __init__(self, correct_answer, options: Collection[str]):
+    def __init__(self, correct_answer, options: Sequence[str]):
         lines = []
         for i, option in enumerate(options):
-            line = f'{i + 1}. {option}'
+            option_str = " or ".join(option) if isinstance(option, list) else option
+            line = f'{i + 1}. {str(option_str)}'
             lines.append(line)
         text = '\n'.join(lines)
         self.correct_answer = correct_answer
@@ -247,11 +248,15 @@ class CursesTuiTutor(BasicTutor):
                 self._next_interface_state = InterfaceState.QUIT
             elif self._interface_state == InterfaceState.ASKING_QUESTION:
                 self._action_key, question, notes = self.prepare_question()
+                if self._answer_mode == vhkt.basic.AnswerMode.SELECT:
+                    tip_text = 'Press correct hotkey index'
+                else:
+                    tip_text = 'Input hotkey or command and press ENTER'
                 self._display_blocks = [
                     DisplayBlock(ColorMode.QUESTION,
                                  question),
                     DisplayBlock(ColorMode.REGULAR,
-                                 'Input hotkey or command and press ENTER'),
+                                 tip_text),
                 ]
                 notes_mod = []
                 if len(notes) == 1:
@@ -268,21 +273,24 @@ class CursesTuiTutor(BasicTutor):
                 if self._answer_mode == vhkt.basic.AnswerMode.SELECT:
                     correct_answer = self.hk_storage.action_hotkeys_by_key(self._action_key)
                     other_random_keys_count = min(len(self.hk_storage.actions_keys) - 1, 3)
-                    other_random_keys = random.sample(self.hk_storage.actions_keys, other_random_keys_count)
+                    actions_keys_without_correct_one = [action_key for action_key in self.hk_storage.actions_keys if action_key != self._action_key]
+                    other_random_keys = random.sample(actions_keys_without_correct_one, other_random_keys_count)
                     other_answers = [self.hk_storage.action_hotkeys_by_key(action_key) for action_key in other_random_keys]
                     answers = [correct_answer] + other_answers
                     random.shuffle(answers)
-                    answer_block = SelectAnswerDisplayBlock(correct_answer, answers)
-                else:
-                    answer_block = InputAnswerDisplayBlock()
-                self._display_blocks += [answer_block]
+                    answer_options_display_block = AnswerOptionsDisplayBlock(correct_answer, answers)
+                    self._display_blocks += [answer_options_display_block]
+                    self._display_blocks += [EmptyDisplayBlock()]
+                self._display_blocks += [InputAnswerDisplayBlock()]
                 self._interface_state = InterfaceState.ANSWER_INPUT
             elif self._interface_state == InterfaceState.ANSWER_INPUT:
-                if isinstance(self._display_blocks[-1], SelectAnswerDisplayBlock):
-                    input_answer_display_block: SelectAnswerDisplayBlock = self._display_blocks[-1]
+                if isinstance(self._display_blocks[-3], AnswerOptionsDisplayBlock):
+                    answer_options_display_block: AnswerOptionsDisplayBlock = self._display_blocks[-3]
+                    input_answer_display_block: InputAnswerDisplayBlock = self._display_blocks[-1]
                     key = chr(k)
-                    if key in string.digits and 0 < int(key) <= len(input_answer_display_block.options):
+                    if key in string.digits and 0 < int(key) <= len(answer_options_display_block.options):
                         self._input_string = key
+                        input_answer_display_block.input_key_combinations.append(key)
                         self._interface_state = InterfaceState.CHECKING_ANSWER
                 elif isinstance(self._display_blocks[-1], InputAnswerDisplayBlock):
                     input_answer_display_block: InputAnswerDisplayBlock = self._display_blocks[-1]
@@ -330,10 +338,10 @@ class CursesTuiTutor(BasicTutor):
                 self._interface_state = InterfaceState.PENDING_ENTER_TO_PROCEED_TO_NEXT_STEP
                 self._next_interface_state = InterfaceState.ASKING_QUESTION
             elif self._interface_state == InterfaceState.CHECKING_ANSWER:
-                if isinstance(self._display_blocks[-1], SelectAnswerDisplayBlock):
-                    input_answer_display_block: SelectAnswerDisplayBlock = self._display_blocks[-1]
+                if isinstance(self._display_blocks[-3], AnswerOptionsDisplayBlock):
+                    answer_options_display_block: AnswerOptionsDisplayBlock = self._display_blocks[-3]
                     input_answer = int(self._input_string) - 1
-                    if input_answer_display_block.options[input_answer] == input_answer_display_block.correct_answer:
+                    if answer_options_display_block.options[input_answer] == answer_options_display_block.correct_answer:
                         self._interface_state = InterfaceState.CORRECT_ANSWER
                     else:
                         self._interface_state = InterfaceState.INCORRECT_ANSWER
@@ -418,6 +426,13 @@ class CursesTuiTutor(BasicTutor):
     def _render_display_blocks(self):
         start_y = int((self._height // 2) - len(self._display_blocks) // 2)
         display_block: DisplayBlock
+        cumulative_item_i = 1
         for display_block_i, display_block in enumerate(self._display_blocks):
-            start_x = self._width // 2 - len(display_block.text) // 2
-            self.window.addstr(start_y + display_block_i, start_x, display_block.text, curses.color_pair(display_block.color_mode.value))
+            if '\n' in display_block.text:
+                lines = display_block.text.split('\n')
+            else:
+                lines = (display_block.text,)
+            for line_i, line in enumerate(lines):
+                start_x = self._width // 2 - len(line) // 2
+                self.window.addstr(start_y + cumulative_item_i, start_x, line, curses.color_pair(display_block.color_mode.value))
+                cumulative_item_i += 1
