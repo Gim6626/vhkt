@@ -56,6 +56,7 @@ class FileHotKeysStorage(BasicHotKeysStorage):
                         or 'Esc' in hotkey
                         or 'PgUp' in hotkey
                         or 'PgDn' in hotkey
+                        or 'Tab' in hotkey
                         or re.search(r'F\d+', hotkey)):
                     hotkeys_mod.append(hotkey)
                 else:
