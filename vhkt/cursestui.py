@@ -336,7 +336,7 @@ class CursesTuiTutor(BasicTutor):
                     ValueError(f'Invalid last display block type "{type(self._display_blocks[-1])}"')
             elif self._interface_state == InterfaceState.SKIP_ACTION:
                 self._display_blocks = [
-                    DisplayBlock(ColorMode.SUCCESS,
+                    DisplayBlock(ColorMode.ERROR,
                                  f'Action "{self.hk_storage.action_description_by_key(self._action_key)}" skipped'),
                     DisplayBlock(ColorMode.REGULAR,
                                  'Press ENTER to continue')
@@ -416,7 +416,7 @@ class CursesTuiTutor(BasicTutor):
                     self._interface_state = InterfaceState.CHECKING_IF_HELP_IS_NEEDED
             elif self._interface_state == InterfaceState.SHOWING_HELP:
                 self._display_blocks = [
-                    DisplayBlock(ColorMode.REGULAR,
+                    DisplayBlock(ColorMode.SUCCESS,
                                  self.help_for_action(self._action_key)),
                     DisplayBlock(ColorMode.REGULAR,
                                  'Press ENTER to continue'),
