@@ -2,6 +2,7 @@
 # 2020 Dmitriy Vinokurov gim6626@gmail.com
 
 import curses
+import textwrap
 import random
 from typing import List, Sequence
 from enum import Enum
@@ -197,12 +198,16 @@ class CursesTuiTutor(BasicTutor):
 
     def _render_statistics(self):
         statistics_str = ', '.join(self.learning_stats)
-        self.window.addstr(0, 0, statistics_str, curses.color_pair(ColorMode.STATISTICS.value))
+        lines = textwrap.wrap(statistics_str, width=self._width - 1)
+        for line_i, line in enumerate(lines):
+            self.window.addstr(line_i, 0, line, curses.color_pair(ColorMode.STATISTICS.value))
 
     def _render_statusbar(self):
         self.window.attron(curses.color_pair(ColorMode.STATUS_BAR.value))
-        self.window.addstr(self._height - 1, 0, self._statusbar_str)
-        self.window.addstr(self._height - 1, len(self._statusbar_str), " " * (self._width - len(self._statusbar_str) - 1))
+        lines = textwrap.wrap(self._statusbar_str, width=self._width - 1)
+        for line_i, line in enumerate(lines):
+            self.window.addstr(self._height - len(lines) + line_i, 0, line)
+            self.window.addstr(self._height - len(lines) + line_i, len(line), " " * (self._width - len(line) - 1))
         self.window.attroff(curses.color_pair(ColorMode.STATUS_BAR.value))
 
     def tutor(self):
