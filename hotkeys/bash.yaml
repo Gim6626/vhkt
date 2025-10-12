@@ -36,7 +36,7 @@ actions:
     hotkeys:
       - 'Alt+Backspace'
   delete_word_from_cursor:
-    description: 'Delete the word from the cursor (until first non alphanumeric)'
+    description: 'Delete the word after the cursor (until first non alphanumeric)'
     hotkeys:
       - 'Alt+d'
   clear_screen:
