@@ -339,6 +339,13 @@ class CursesTuiTutor(BasicTutor):
                 self._next_interface_state = InterfaceState.ASKING_QUESTION
             elif self._interface_state == InterfaceState.CHECKING_ANSWER:
                 if isinstance(self._display_blocks[-3], AnswerOptionsDisplayBlock):
+                    input_answer_display_block: InputAnswerDisplayBlock = self._display_blocks[-1]
+                    if k == 263:
+                        # KEY_BACKSPACE
+                        if len(input_answer_display_block.input_key_combinations) > 0:
+                            del input_answer_display_block.input_key_combinations[-1]
+                            self._interface_state = InterfaceState.ANSWER_INPUT
+                            continue
                     answer_options_display_block: AnswerOptionsDisplayBlock = self._display_blocks[-3]
                     input_answer = int(self._input_string) - 1
                     if answer_options_display_block.options[input_answer] == answer_options_display_block.correct_answer:
