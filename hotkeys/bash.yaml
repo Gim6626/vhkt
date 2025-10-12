@@ -1,5 +1,5 @@
 app: Bash
-source: https://gist.github.com/tuxfight3r/60051ac67c5f0445efee
+link: https://gist.github.com/tuxfight3r/60051ac67c5f0445efee
 actions:
   to_line_beginning:
     description: 'Goto beginning of command line'

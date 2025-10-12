@@ -1,5 +1,5 @@
 app: Chrome
-source: https://support.google.com/chrome/answer/157179
+link: https://support.google.com/chrome/answer/157179
 actions:
   new_window:
     description: 'Open a new window'

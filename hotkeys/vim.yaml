@@ -1,4 +1,5 @@
 app: Vim
+link: https://vim.rtorr.com/
 actions:
   visual:
     description: 'Visual/selection'
