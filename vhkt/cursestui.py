@@ -288,6 +288,14 @@ class CursesTuiTutor(BasicTutor):
                     answer_options_display_block: AnswerOptionsDisplayBlock = self._display_blocks[-3]
                     input_answer_display_block: InputAnswerDisplayBlock = self._display_blocks[-1]
                     key = chr(k)
+                    if k == 8:
+                        # "Ctrl+h" pressed
+                        self._interface_state = InterfaceState.SHOWING_HELP
+                        continue
+                    if k == 11:
+                        # "Ctrl+k" pressed
+                        self._interface_state = InterfaceState.SKIP_ACTION
+                        continue
                     if key in string.digits and 0 < int(key) <= len(answer_options_display_block.options):
                         self._input_string = key
                         input_answer_display_block.input_key_combinations.append(key)
