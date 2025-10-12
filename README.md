@@ -43,21 +43,41 @@ action keys from the hotkeys file, and start its work.
 
 At first, VHKT will show you a welcome screen:
 
-![](img/welcome screen.png)
+![](img/welcome.png)
 
 then randomly selected actions will be shown and the app will ask you to
 guess the corresponding hotkey or command for each action like here:
 
-![](img/question example.png)
+![](img/question.png)
+
+If you guess correctly, you will see a message like this:
+
+![](img/correct.png)
+
+Otherwise you will be asked to show correct one:
+
+![](img/incorrect.png)
 
 To learn a hotkey or command, you need to type it correctly three times.
-Made a mistake? That's minus one, try again. Brief statistics for your
-learning progress is shown at the top of the screen and some control
-hotkeys for the app itself - at the bottom, e.g. press `Ctrl+e` to exit.
+Made a mistake? That's minus one, try again.
+
+Brief statistics for your learning progress is shown at the top of the
+screen and some control hotkeys for the app itself - at the bottom,
+e.g. press `Ctrl+e` to exit.
+
+If you are unsure about the hotkey or command, you can press `Ctrl+h` to
+learn it and you will see a tip:
+
+![](img/help.png)
+
+Or if you find some action that you don't want to learn, you can press
+`Ctrl+k` to skip it and you will see the message:
+
+![](img/skip.png)
 
 When you are done, you will see a message like this:
 
-![](img/all hotkeys were learned.png)
+![](img/done.png)
 
 Then you could proceed to the next application hotkeys file.
 
